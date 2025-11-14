@@ -28,7 +28,7 @@ from config import (
 from helpers import (
     extract_portals, is_character, determine_primary_affiliation, extract_race,
     load_batch_files, create_character_title_map, find_character_title,
-    load_portal_mapping
+    load_portal_mapping, match_portal_to_key
 )
 
 
@@ -120,12 +120,6 @@ def create_character_entries(char_affil_mapping):
         # Extract portals and map them to main portals using the comprehensive mapping
         portals = extract_portals(wikitext, portal_mapping)
         
-        # Track portal statistics
-        if portals:
-            stats["with_portal"] += 1
-        else:
-            stats["without_portal"] += 1
-        
         # Look up affiliations
         affil_data = char_affil_mapping.get(title) or char_affil_mapping.get(display_name)
         if affil_data:
@@ -140,6 +134,37 @@ def create_character_entries(char_affil_mapping):
             race = None
             all_affiliations = []
             affiliation_count = 0
+        
+        # If no portal found in wikitext, try to assign from affiliations
+        if not portals and portal_mapping:
+            assigned_portal = None
+            
+            # First try primary affiliation
+            if affiliation:
+                matched_key = match_portal_to_key(affiliation, portal_mapping)
+                if matched_key:
+                    main_portals = portal_mapping[matched_key]
+                    if main_portals:
+                        assigned_portal = main_portals[-1] if isinstance(main_portals, list) else main_portals
+            
+            # If no match, try all affiliations
+            if not assigned_portal and all_affiliations:
+                for affil in all_affiliations:
+                    matched_key = match_portal_to_key(affil, portal_mapping)
+                    if matched_key:
+                        main_portals = portal_mapping[matched_key]
+                        if main_portals:
+                            assigned_portal = main_portals[-1] if isinstance(main_portals, list) else main_portals
+                            break  # Use first match
+            
+            if assigned_portal:
+                portals = [assigned_portal]
+        
+        # Track portal statistics
+        if portals:
+            stats["with_portal"] += 1
+        else:
+            stats["without_portal"] += 1
         
         entries.append({
             "title": title,

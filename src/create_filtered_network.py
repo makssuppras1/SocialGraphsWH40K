@@ -6,7 +6,8 @@ This script:
 1. Loads the original network from pickle file
 2. Converts it to an undirected graph
 3. Keeps only the largest connected component (removes all nodes not connected to main network)
-4. Saves the filtered network in multiple formats
+4. Removes nodes with degree < 2 (iteratively until no more can be removed)
+5. Saves the filtered network in multiple formats
 """
 
 import pickle
@@ -106,6 +107,52 @@ def keep_largest_component(G):
     return G_filtered, list(nodes_to_remove)
 
 
+def remove_low_degree_nodes(G, min_degree=2):
+    """Remove nodes with degree < min_degree iteratively until no more can be removed."""
+    print("\n" + "="*60)
+    print(f"Removing Nodes with Degree < {min_degree}")
+    print("="*60)
+    
+    G_filtered = G.copy()
+    total_removed = 0
+    iteration = 0
+    
+    while True:
+        iteration += 1
+        # Find nodes with degree < min_degree
+        nodes_to_remove = [n for n in G_filtered.nodes() if G_filtered.degree(n) < min_degree]
+        
+        if not nodes_to_remove:
+            break
+        
+        if iteration == 1:
+            print(f"Iteration {iteration}: Found {len(nodes_to_remove)} nodes with degree < {min_degree}")
+            if nodes_to_remove:
+                print(f"\nSample nodes to remove (first 10):")
+                for node in nodes_to_remove[:10]:
+                    node_name = G_filtered.nodes[node].get('name', node)
+                    degree = G_filtered.degree(node)
+                    print(f"  {node_name} (degree: {degree})")
+                if len(nodes_to_remove) > 10:
+                    print(f"  ... and {len(nodes_to_remove) - 10} more")
+        
+        # Remove the nodes
+        G_filtered.remove_nodes_from(nodes_to_remove)
+        total_removed += len(nodes_to_remove)
+        
+        if iteration > 1:
+            print(f"Iteration {iteration}: Removed {len(nodes_to_remove)} nodes (total removed: {total_removed})")
+    
+    print(f"\nRemoved {total_removed} nodes with degree < {min_degree} in {iteration} iteration(s)")
+    print(f"\nAfter filtering:")
+    print(f"  Original nodes: {G.number_of_nodes()}")
+    print(f"  Removed nodes: {total_removed}")
+    print(f"  Remaining nodes: {G_filtered.number_of_nodes()}")
+    print(f"  Edges: {G_filtered.number_of_edges()}")
+    
+    return G_filtered, total_removed
+
+
 def save_filtered_network(G_filtered):
     """Save the filtered network in multiple formats."""
     print("\n" + "="*60)
@@ -191,7 +238,7 @@ def print_network_statistics(G, G_filtered):
     print(f"  Edges: {G.number_of_edges()}")
     print(f"  Density: {nx.density(G):.6f}")
     
-    print(f"\nFiltered Network (Undirected, largest component only):")
+    print(f"\nFiltered Network (Undirected, largest component, degree >= 2):")
     print(f"  Nodes: {G_filtered.number_of_nodes()}")
     print(f"  Edges: {G_filtered.number_of_edges()}")
     print(f"  Density: {nx.density(G_filtered):.6f}")
@@ -229,12 +276,15 @@ def main():
     G_undirected = convert_to_undirected(G)
     
     # Step 3: Keep only largest connected component
-    G_filtered, removed_nodes = keep_largest_component(G_undirected)
+    G_filtered, removed_nodes_component = keep_largest_component(G_undirected)
     
-    # Step 4: Print statistics
+    # Step 4: Remove nodes with degree < 2
+    G_filtered, removed_nodes_degree = remove_low_degree_nodes(G_filtered, min_degree=2)
+    
+    # Step 5: Print statistics
     print_network_statistics(G, G_filtered)
     
-    # Step 5: Save filtered network
+    # Step 6: Save filtered network
     save_filtered_network(G_filtered)
 
 
