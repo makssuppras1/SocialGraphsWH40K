@@ -17,6 +17,12 @@
   "AdeptusMechanicus": [
     "Mechanicum"
   ],
+  "Adeptus Arbites": [
+    "Imperium"
+  ],
+  "AdeptusArbites": [
+    "Imperium"
+  ],
   "AlphaLegion": [
     "Chaos"
   ],
@@ -65,6 +71,12 @@
   "Chaos": [
     "Chaos"
   ],
+  "Chaos Human": [
+    "Chaos"
+  ],
+  "ChaosHuman": [
+    "Chaos"
+  ],
   "ChaosKnight": [
     "Chaos"
   ],
@@ -89,8 +101,41 @@
   "CrimsonSlaughter": [
     "Chaos"
   ],
+  "Daemon": [
+    "Chaos"
+  ],
+  "Cadian Shock Troopers": [
+    "Astra Militarum"
+  ],
+  "CadianShockTroopers": [
+    "Astra Militarum"
+  ],
+  "Carcharodons": [
+    "Space Marines"
+  ],
+  "Carcharodon": [
+    "Space Marines"
+  ],
+  "Chapter Serfs": [
+    "Space Marines"
+  ],
+  "ChapterSerfs": [
+    "Space Marines"
+  ],
+  "Chaos Space Marine Psykers": [
+    "Chaos"
+  ],
+  "ChaosSpaceMarinePsykers": [
+    "Chaos"
+  ],
   "Cult Mechanicus#Religion": [
     "Mechanicum"
+  ],
+  "Craftworld Eldar": [
+    "Asuryani"
+  ],
+  "CraftworldEldar": [
+    "Asuryani"
   ],
   "Dark Eldar": [
     "Drukhari"
@@ -137,6 +182,12 @@
   "Eldar Corsair": [
     "Drukhari"
   ],
+  "Eldar Corsairs": [
+    "Drukhari"
+  ],
+  "EldarCorsairs": [
+    "Drukhari"
+  ],
   "Eldar Fleet": [
     "Asuryani"
   ],
@@ -163,6 +214,15 @@
   ],
   "Eye of Terror": [
     "Chaos"
+  ],
+  "Fallen Angels": [
+    "Space Marines"
+  ],
+  "FallenAngel": [
+    "Space Marines"
+  ],
+  "FallenAngels": [
+    "Space Marines"
   ],
   "Farseer": [
     "Asuryani"
@@ -218,10 +278,34 @@
   "HowlingGriffons": [
     "Space Marines"
   ],
+  "High Lords of Terra": [
+    "Imperium"
+  ],
+  "HighLordsOfTerra": [
+    "Imperium"
+  ],
+  "HighLords": [
+    "Imperium"
+  ],
   "Imperial Guard": [
     "Space Marines"
   ],
+  "Imperial": [
+    "Imperium"
+  ],
+  "Imperial Space Marines": [
+    "Space Marines"
+  ],
+  "ImperialSpaceMarines": [
+    "Space Marines"
+  ],
   "ImperialArmy": [
+    "Astra Militarum"
+  ],
+  "Imperial Guard Commissars": [
+    "Astra Militarum"
+  ],
+  "ImperialGuardCommissars": [
     "Astra Militarum"
   ],
   "ImperialFists": [
@@ -250,6 +334,15 @@
   ],
   "Inquisitor": [
     "Inquisition"
+  ],
+  "Knights": [
+    "Imperium"
+  ],
+  "Knight": [
+    "Imperium"
+  ],
+  "Kroot": [
+    "T'au"
   ],
   "IronHand": [
     "Space Marines"
@@ -299,8 +392,23 @@
   "Mandrakes": [
     "Drukhari"
   ],
+  "Mordian Iron Guard": [
+    "Astra Militarum"
+  ],
+  "MordianIronGuard": [
+    "Astra Militarum"
+  ],
+  "Mordian": [
+    "Astra Militarum"
+  ],
   "Mechanicum": [
     "Mechanicum"
+  ],
+  "Novamarines": [
+    "Space Marines"
+  ],
+  "Novamarine": [
+    "Space Marines"
   ],
   "Necromunda": [
     "Imperium"
@@ -329,6 +437,21 @@
   "Orks": [
     "Orks"
   ],
+  "Officio Assassinorum": [
+    "Imperium"
+  ],
+  "OfficioAssassinorum": [
+    "Imperium"
+  ],
+  "Planetary Defence Forces": [
+    "Imperium"
+  ],
+  "PlanetaryDefenceForces": [
+    "Imperium"
+  ],
+  "PDF": [
+    "Imperium"
+  ],
   "Purging of Centrati's Eye": [
     "Drukhari"
   ],
@@ -338,8 +461,32 @@
   "RedCorsairs": [
     "Chaos"
   ],
+  "Renegades": [
+    "Chaos"
+  ],
+  "Renegade": [
+    "Chaos"
+  ],
   "Salamanders": [
     "Space Marines"
+  ],
+  "Silver Templars": [
+    "Space Marines"
+  ],
+  "SilverTemplars": [
+    "Space Marines"
+  ],
+  "Armageddon Steel Legion": [
+    "Astra Militarum"
+  ],
+  "ArmageddonSteelLegion": [
+    "Astra Militarum"
+  ],
+  "Adeptus Ministorum": [
+    "Imperium"
+  ],
+  "AdeptusMinistorum": [
+    "Imperium"
   ],
   "ScythesOfTheEmperor": [
     "Space Marines"
@@ -355,6 +502,12 @@
   ],
   "Slaanesh": [
     "Chaos"
+  ],
+  "Sisters of Silence": [
+    "Imperium"
+  ],
+  "SistersOfSilence": [
+    "Imperium"
   ],
   "SonsOfHorus": [
     "Chaos"
@@ -377,6 +530,12 @@
   "SpaceMarines": [
     "Space Marines"
   ],
+  "Space Marine Psykers": [
+    "Space Marines"
+  ],
+  "SpaceMarinePsykers": [
+    "Space Marines"
+  ],
   "SpaceWolves": [
     "Space Marines"
   ],
@@ -393,6 +552,12 @@
     "Asuryani"
   ],
   "T'au": [
+    "T'au"
+  ],
+  "T'au Empire": [
+    "T'au"
+  ],
+  "TauEmpire": [
     "T'au"
   ],
   "Tanith": [
@@ -421,6 +586,12 @@
   ],
   "Tzeentch": [
     "Chaos"
+  ],
+  "Tyrannic Wars": [
+    "Imperium"
+  ],
+  "TyrannicWars": [
+    "Imperium"
   ],
   "Ultramarines": [
     "Space Marines"
