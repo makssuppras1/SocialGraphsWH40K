@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Create filtered undirected network by removing isolated nodes (degree 0).
+Create filtered undirected network by keeping only the largest connected component.
 
 This script:
 1. Loads the original network from pickle file
 2. Converts it to an undirected graph
-3. Removes all nodes with degree 0 (isolated nodes)
+3. Keeps only the largest connected component (removes all nodes not connected to main network)
 4. Saves the filtered network in multiple formats
 """
 
@@ -52,36 +52,58 @@ def convert_to_undirected(G):
     return G_undirected
 
 
-def remove_isolated_nodes(G):
-    """Remove all nodes with degree 0."""
+def keep_largest_component(G):
+    """Keep only the largest connected component, removing all other nodes."""
     print("\n" + "="*60)
-    print("Removing Isolated Nodes (degree 0)")
+    print("Keeping Only Largest Connected Component")
     print("="*60)
     
-    # Find nodes with degree 0
-    isolated_nodes = [n for n in G.nodes() if G.degree(n) == 0]
+    # Find all connected components
+    components = list(nx.connected_components(G))
+    print(f"Found {len(components)} connected components")
     
-    print(f"Found {len(isolated_nodes)} isolated nodes (degree 0)")
+    if not components:
+        print("Warning: No connected components found!")
+        return G.copy(), []
     
-    if isolated_nodes:
-        print(f"\nSample isolated nodes (first 10):")
-        for node in isolated_nodes[:10]:
+    # Find the largest component
+    largest_component = max(components, key=len)
+    print(f"Largest component size: {len(largest_component)} nodes")
+    
+    # Show component size distribution
+    component_sizes = sorted([len(c) for c in components], reverse=True)
+    print(f"\nComponent size distribution:")
+    print(f"  Largest: {component_sizes[0]} nodes")
+    if len(component_sizes) > 1:
+        print(f"  Second largest: {component_sizes[1]} nodes")
+    if len(component_sizes) > 2:
+        print(f"  Total components: {len(component_sizes)}")
+        print(f"  Other components: {component_sizes[2:]} nodes each")
+    
+    # Find nodes to remove (all nodes not in largest component)
+    all_nodes = set(G.nodes())
+    nodes_to_remove = all_nodes - largest_component
+    
+    print(f"\nRemoving {len(nodes_to_remove)} nodes not in largest component")
+    
+    if nodes_to_remove:
+        print(f"\nSample removed nodes (first 10):")
+        for node in list(nodes_to_remove)[:10]:
             node_name = G.nodes[node].get('name', node)
             print(f"  {node_name}")
-        if len(isolated_nodes) > 10:
-            print(f"  ... and {len(isolated_nodes) - 10} more")
+        if len(nodes_to_remove) > 10:
+            print(f"  ... and {len(nodes_to_remove) - 10} more")
     
-    # Create a copy and remove isolated nodes
-    G_filtered = G.copy()
-    G_filtered.remove_nodes_from(isolated_nodes)
+    # Create a subgraph with only the largest component
+    G_filtered = G.subgraph(largest_component).copy()
     
     print(f"\nAfter filtering:")
     print(f"  Original nodes: {G.number_of_nodes()}")
-    print(f"  Removed nodes: {len(isolated_nodes)}")
+    print(f"  Removed nodes: {len(nodes_to_remove)}")
     print(f"  Remaining nodes: {G_filtered.number_of_nodes()}")
     print(f"  Edges: {G_filtered.number_of_edges()}")
     
-    return G_filtered, isolated_nodes
+    return G_filtered, list(nodes_to_remove)
 
 
 def save_filtered_network(G_filtered):
@@ -169,20 +191,24 @@ def print_network_statistics(G, G_filtered):
     print(f"  Edges: {G.number_of_edges()}")
     print(f"  Density: {nx.density(G):.6f}")
     
-    print(f"\nFiltered Network (Undirected, no isolated nodes):")
+    print(f"\nFiltered Network (Undirected, largest component only):")
     print(f"  Nodes: {G_filtered.number_of_nodes()}")
     print(f"  Edges: {G_filtered.number_of_edges()}")
     print(f"  Density: {nx.density(G_filtered):.6f}")
     
     if G_filtered.number_of_nodes() > 0:
-        # Connected components
+        # Connected components (should be 1 after filtering)
         components = list(nx.connected_components(G_filtered))
         print(f"\nConnected Components:")
         print(f"  Number of components: {len(components)}")
-        if components:
-            largest_component = max(components, key=len)
-            print(f"  Largest component size: {len(largest_component)} nodes "
-                  f"({100*len(largest_component)/G_filtered.number_of_nodes():.2f}%)")
+        if len(components) == 1:
+            print(f"  ✓ Network is fully connected (single component)")
+        else:
+            print(f"  Warning: Multiple components still present")
+            if components:
+                largest_component = max(components, key=len)
+                print(f"  Largest component size: {len(largest_component)} nodes "
+                      f"({100*len(largest_component)/G_filtered.number_of_nodes():.2f}%)")
         
         # Degree statistics
         degrees = [d for n, d in G_filtered.degree()]
@@ -202,8 +228,8 @@ def main():
     # Step 2: Convert to undirected
     G_undirected = convert_to_undirected(G)
     
-    # Step 3: Remove isolated nodes
-    G_filtered, isolated_nodes = remove_isolated_nodes(G_undirected)
+    # Step 3: Keep only largest connected component
+    G_filtered, removed_nodes = keep_largest_component(G_undirected)
     
     # Step 4: Print statistics
     print_network_statistics(G, G_filtered)
