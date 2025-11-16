@@ -7,6 +7,8 @@ BASE_DIR = SCRIPT_DIR.parent  # Go up one level from notebooks/ to Final Assignm
 RAW_DATA_PATH = BASE_DIR / "raw_data"
 DATA_PATH = BASE_DIR / "data"
 DATA_PATH.mkdir(exist_ok=True)
+IMAGES_PATH = BASE_DIR / "images"
+IMAGES_PATH.mkdir(exist_ok=True)
 
 # File paths
 CHAR_CATEGORIES_FILE = RAW_DATA_PATH / "lexicanum_characters_by_category_generated.json"
