@@ -16,7 +16,8 @@ def main():
     
     # --- Phase 1: Topology ---
     print("\n--- Phase 1: Topological Feature Extraction ---")
-    G = load_graph()
+    # Use filtered network (nodes with degree >= 2)
+    G = load_graph(use_filtered=True)
     print(f"Loaded graph with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges.")
     
     topology_df = compute_topology_metrics(G)
@@ -49,8 +50,8 @@ def main():
     # Generate Embeddings
     embeddings = generate_embeddings(valid_texts)
     
-    # Clustering
-    cluster_ids = cluster_embeddings(embeddings, n_clusters=20)
+    # Clustering: Use 16 clusters to match the 16 main faction portals
+    cluster_ids = cluster_embeddings(embeddings, n_clusters=16)
     
     # Keywords
     keywords = extract_cluster_keywords(valid_texts, cluster_ids)

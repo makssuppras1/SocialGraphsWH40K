@@ -1,23 +1,66 @@
 import json
+import pickle
 import networkx as nx
 import community.community_louvain as community_louvain
 import pandas as pd
 from pathlib import Path
 
-def load_graph(edges_file='data/lexicanum_edges.json'):
-    """Load the graph from the edges JSON file."""
+def load_graph(edges_file='data/lexicanum_edges.json', use_filtered=True):
+    """
+    Load the graph from the edges JSON file, optionally filtered.
+    
+    Args:
+        edges_file: Path to edges JSON file
+        use_filtered: If True, only include nodes from the filtered network
+    """
+    # If using filtered, first get the list of valid nodes from filtered network
+    valid_nodes = None
+    if use_filtered:
+        try:
+            from config import PICKLE_FILTERED_FILE
+            path = Path(PICKLE_FILTERED_FILE)
+            if not path.exists():
+                path = Path(__file__).parent.parent / PICKLE_FILTERED_FILE
+            
+            if path.exists():
+                print(f"Loading filtered network nodes from {path}...")
+                with open(path, 'rb') as f:
+                    G_filtered = pickle.load(f)
+                valid_nodes = set(G_filtered.nodes())
+                print(f"Filtered network has {len(valid_nodes)} nodes")
+            else:
+                print(f"Warning: Filtered network file not found at {path}. Using full network.")
+        except Exception as e:
+            print(f"Warning: Could not load filtered network: {e}. Using full network.")
+    
+    # Load edges
     path = Path(edges_file)
     if not path.exists():
-        # Try relative to project root if not found
         path = Path(__file__).parent.parent / edges_file
         
     with open(path, 'r', encoding='utf-8') as f:
         edges_data = json.load(f)
     
     G = nx.DiGraph()
+    
+    # Add edges, filtering if needed
+    edges_added = 0
     for edge in edges_data:
-        G.add_edge(edge['source'], edge['target'])
+        source = edge['source']
+        target = edge['target']
         
+        # If using filtered network, only add edges between valid nodes
+        if valid_nodes is not None:
+            if source not in valid_nodes or target not in valid_nodes:
+                continue
+        
+        G.add_edge(source, target)
+        edges_added += 1
+    
+    print(f"Built directed graph with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges")
+    if use_filtered and valid_nodes:
+        print(f"  (Filtered to match {len(valid_nodes)} nodes from filtered network)")
+    
     return G
 
 def compute_topology_metrics(G):
@@ -58,7 +101,7 @@ def compute_topology_metrics(G):
 
 if __name__ == "__main__":
     try:
-        G = load_graph()
+        G = load_graph(use_filtered=True)
         print(f"Graph loaded: {G.number_of_nodes()} nodes, {G.number_of_edges()} edges")
         metrics_df = compute_topology_metrics(G)
         print(metrics_df.head())
