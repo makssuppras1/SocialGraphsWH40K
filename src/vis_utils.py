@@ -1,21 +1,16 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
-import numpy as np
 from pathlib import Path
 
 def plot_mythology_scatter(df, output_path='images/mythology_scatter.png'):
     # scatter plot: x-axis = betweenness centrality (log scale), y-axis = neighbor semantic consistency
-    # color dots by their semantic cluster
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
 
     plt.figure(figsize=(12, 8))
-    
-    # filter data
     plot_df = df.dropna(subset=['betweenness', 'neighbor_consistency', 'semantic_cluster_id']).copy()
     
     if len(plot_df) == 0:
-        print("No data to plot.")
         return
 
     try:
@@ -28,18 +23,13 @@ def plot_mythology_scatter(df, output_path='images/mythology_scatter.png'):
             alpha=0.6,
             s=20
         )
-        
         plt.xscale('log')
         plt.xlabel('Betweenness Centrality (Log Scale)')
         plt.ylabel('Neighbor Semantic Consistency')
         plt.title('Narrative Independence vs Structural Centrality\n(Highlighting Mythological Anchors)')
-        
-        # move legend outside if many clusters
         plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', title='Semantic Cluster', ncol=2)
-        
         plt.tight_layout()
         plt.savefig(output_path, dpi=300)
-        print(f"Saved scatter plot to {output_path}")
         plt.close()
     except Exception as e:
         print(f"Error plotting: {e}")
@@ -49,17 +39,8 @@ def export_results(df, output_path='data/mythology_vs_narrative_analysis.csv'):
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
 
     columns = [
-        'node_id', 
-        'betweenness', 
-        'pagerank', 
-        'network_community_id', 
-        'semantic_cluster_id', 
-        'top_keywords', 
-        'neighbor_consistency'
+        'node_id', 'betweenness', 'pagerank', 'network_community_id', 
+        'semantic_cluster_id', 'top_keywords', 'neighbor_consistency'
     ]
-    
-    # ensure columns exist
     export_cols = [c for c in columns if c in df.columns]
-    
     df[export_cols].to_csv(output_path, index=False)
-    print(f"Results exported to {output_path}")
