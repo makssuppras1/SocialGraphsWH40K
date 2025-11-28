@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify that filtered network files exist and show their locations."""
+# verifies that filtered network files exist and shows their locations
 
 from pathlib import Path
 from config import GEXF_FILTERED_FILE, PICKLE_FILTERED_FILE, DATA_PATH
@@ -30,4 +30,3 @@ for file in sorted(DATA_PATH.glob("*")):
     if file.is_file():
         size = file.stat().st_size
         print(f"  {file.name:50} {size:>12,} bytes")
-

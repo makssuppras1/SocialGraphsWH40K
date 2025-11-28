@@ -3,14 +3,11 @@ import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 
 def calculate_neighbor_consistency(G, embeddings, node_to_idx):
-    """
-    Calculate Neighbor Semantic Consistency: Average cosine similarity between
-    a node's embedding and its neighbors' embeddings.
-    
-    G: NetworkX Graph
-    embeddings: numpy array of shape (n_nodes, embedding_dim)
-    node_to_idx: dict mapping node name to row index in embeddings
-    """
+    # calculates neighbor semantic consistency: average cosine similarity between
+    # a node's embedding and its neighbors' embeddings
+    # G: NetworkX Graph
+    # embeddings: numpy array of shape (n_nodes, embedding_dim)
+    # node_to_idx: dict mapping node name to row index in embeddings
     consistency_scores = {}
     nodes = list(G.nodes())
     
@@ -25,14 +22,17 @@ def calculate_neighbor_consistency(G, embeddings, node_to_idx):
         node_idx = node_to_idx[node]
         node_emb = embeddings[node_idx].reshape(1, -1)
         
-        # Using successors (outgoing links) as per "links to" description
+        # using successors (outgoing links) as per "links to" description
         neighbors = list(G.neighbors(node))
         
         if not neighbors:
-            consistency_scores[node] = np.nan # No neighbors -> undefined consistency
+            consistency_scores[node] = np.nan  # no neighbors -> undefined consistency
             continue
             
-        neighbor_indices = [node_to_idx[n] for n in neighbors if n in node_to_idx]
+        neighbor_indices = []
+        for n in neighbors:
+            if n in node_to_idx:
+                neighbor_indices.append(node_to_idx[n])
         
         if not neighbor_indices:
             consistency_scores[node] = np.nan
@@ -40,7 +40,7 @@ def calculate_neighbor_consistency(G, embeddings, node_to_idx):
             
         neighbor_embs = embeddings[neighbor_indices]
         
-        # Compute cosine similarity
+        # compute cosine similarity
         # cosine_similarity returns matrix [1, n_neighbors]
         sims = cosine_similarity(node_emb, neighbor_embs)[0]
         avg_sim = np.mean(sims)
@@ -54,12 +54,12 @@ def calculate_neighbor_consistency(G, embeddings, node_to_idx):
     return consistency_scores
 
 def calculate_correlations(df):
-    """Calculate correlations between metrics."""
+    # calculates correlations between metrics
     print("Calculating correlations...")
-    # Focus: Betweenness vs Neighbor Consistency
+    # focus: betweenness vs neighbor consistency
     cols = ['betweenness', 'neighbor_consistency']
     if all(col in df.columns for col in cols):
-        # Drop NaNs
+        # drop NaNs
         clean_df = df.dropna(subset=cols)
         if len(clean_df) > 0:
             correlation = clean_df['betweenness'].corr(clean_df['neighbor_consistency'], method='pearson')
@@ -70,4 +70,3 @@ def calculate_correlations(df):
     else:
         print(f"Missing columns for correlation. Available: {df.columns}")
     return None
-

@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
-"""
-Explore the mythology analysis results:
-- Identify Mythological Anchor candidates
-- Display all semantic clusters
-- Show interesting comparisons
-"""
+# explores the mythology analysis results:
+# - identifies mythological anchor candidates
+# - displays all semantic clusters
+# - shows interesting comparisons
 
 import pandas as pd
 import numpy as np
 from pathlib import Path
 
 def load_results():
-    """Load the analysis results."""
+    # loads the analysis results
     csv_path = Path("data/mythology_vs_narrative_analysis.csv")
     if not csv_path.exists():
         csv_path = Path(__file__).parent.parent / "data/mythology_vs_narrative_analysis.csv"
@@ -20,10 +18,8 @@ def load_results():
     return df
 
 def identify_mythological_anchors(df, betweenness_threshold=0.01, consistency_threshold=0.50):
-    """
-    Identify potential Mythological Anchors:
-    High betweenness + Low neighbor consistency
-    """
+    # identifies potential mythological anchors:
+    # high betweenness + low neighbor consistency
     print("="*80)
     print("MYTHOLOGICAL ANCHOR CANDIDATES")
     print("="*80)
@@ -32,7 +28,7 @@ def identify_mythological_anchors(df, betweenness_threshold=0.01, consistency_th
     print(f"  - Neighbor Consistency <= {consistency_threshold}")
     print(f"  (High structural importance + Low semantic similarity to neighbors)")
     
-    # Filter candidates
+    # filter candidates
     candidates = df[
         (df['betweenness'] >= betweenness_threshold) & 
         (df['neighbor_consistency'] <= consistency_threshold)
@@ -40,7 +36,7 @@ def identify_mythological_anchors(df, betweenness_threshold=0.01, consistency_th
     
     if len(candidates) == 0:
         print("\nNo characters meet the strict criteria. Relaxing thresholds...")
-        # Use top 10% by betweenness, bottom 20% by consistency
+        # use top 10% by betweenness, bottom 20% by consistency
         betweenness_threshold = df['betweenness'].quantile(0.90)
         consistency_threshold = df['neighbor_consistency'].quantile(0.20)
         candidates = df[
@@ -64,12 +60,12 @@ def identify_mythological_anchors(df, betweenness_threshold=0.01, consistency_th
     return candidates
 
 def display_all_clusters(df):
-    """Display all semantic clusters with their keywords and example characters."""
+    # displays all semantic clusters with their keywords and example characters
     print("\n" + "="*80)
     print("ALL SEMANTIC CLUSTERS (20 Archetypes)")
     print("="*80)
     
-    # Group by cluster
+    # group by cluster
     clusters = df.groupby('semantic_cluster_id').agg({
         'node_id': 'count',
         'top_keywords': 'first',
@@ -87,7 +83,7 @@ def display_all_clusters(df):
         print(f"{int(cluster_id):<8} {int(row['count']):<8} {row['avg_betweenness']:<18.6f} "
               f"{row['avg_consistency']:<18.4f} {row['keywords']}")
     
-    # Show example characters from each cluster
+    # show example characters from each cluster
     print("\n" + "="*80)
     print("EXAMPLE CHARACTERS FROM EACH CLUSTER")
     print("="*80)
@@ -103,14 +99,14 @@ def display_all_clusters(df):
         print(f"Average consistency: {cluster_chars['neighbor_consistency'].mean():.4f}")
         print(f"Average betweenness: {cluster_chars['betweenness'].mean():.6f}")
         
-        # Show top characters by betweenness
+        # show top characters by betweenness
         top_by_betweenness = cluster_chars.nlargest(5, 'betweenness')
         print(f"\nTop 5 by Betweenness:")
         for idx, char in top_by_betweenness.iterrows():
             print(f"  {char['node_id']:40s} | Betweenness: {char['betweenness']:8.6f} | "
                   f"Consistency: {char['neighbor_consistency']:.4f}")
         
-        # Show characters with lowest consistency (most diverse neighbors)
+        # show characters with lowest consistency (most diverse neighbors)
         low_consistency = cluster_chars.nsmallest(3, 'neighbor_consistency')
         if len(low_consistency) > 0:
             print(f"\nLowest Consistency (Most Diverse Neighbors):")
@@ -118,7 +114,7 @@ def display_all_clusters(df):
                 print(f"  {char['node_id']:40s} | Consistency: {char['neighbor_consistency']:.4f}")
 
 def compare_characters(df, char_names):
-    """Compare specific characters side by side."""
+    # compares specific characters side by side
     print("\n" + "="*80)
     print("CHARACTER COMPARISON")
     print("="*80)
@@ -133,12 +129,12 @@ def compare_characters(df, char_names):
     print("-"*120)
     
     for idx, char in found_chars.iterrows():
-        keywords = str(char['top_keywords'])[:50]  # Truncate long keywords
+        keywords = str(char['top_keywords'])[:50]  # truncate long keywords
         print(f"{char['node_id']:<40} {char['betweenness']:<15.6f} "
               f"{char['neighbor_consistency']:<15.4f} {int(char['semantic_cluster_id']):<10} {keywords}")
 
 def show_statistics(df):
-    """Show overall statistics."""
+    # shows overall statistics
     print("\n" + "="*80)
     print("OVERALL STATISTICS")
     print("="*80)
@@ -147,13 +143,16 @@ def show_statistics(df):
     print(f"\nBetweenness Centrality:")
     print(f"  Mean: {df['betweenness'].mean():.6f}")
     print(f"  Median: {df['betweenness'].median():.6f}")
-    print(f"  Max: {df['betweenness'].max():.6f} ({df.loc[df['betweenness'].idxmax(), 'node_id']})")
+    max_betweenness_idx = df['betweenness'].idxmax()
+    print(f"  Max: {df['betweenness'].max():.6f} ({df.loc[max_betweenness_idx, 'node_id']})")
     
     print(f"\nNeighbor Semantic Consistency:")
     print(f"  Mean: {df['neighbor_consistency'].mean():.4f}")
     print(f"  Median: {df['neighbor_consistency'].median():.4f}")
-    print(f"  Min: {df['neighbor_consistency'].min():.4f} ({df.loc[df['neighbor_consistency'].idxmin(), 'node_id']})")
-    print(f"  Max: {df['neighbor_consistency'].max():.4f} ({df.loc[df['neighbor_consistency'].idxmax(), 'node_id']})")
+    min_consistency_idx = df['neighbor_consistency'].idxmin()
+    max_consistency_idx = df['neighbor_consistency'].idxmax()
+    print(f"  Min: {df['neighbor_consistency'].min():.4f} ({df.loc[min_consistency_idx, 'node_id']})")
+    print(f"  Max: {df['neighbor_consistency'].max():.4f} ({df.loc[max_consistency_idx, 'node_id']})")
     
     print(f"\nSemantic Clusters:")
     print(f"  Number of clusters: {df['semantic_cluster_id'].nunique()}")
@@ -161,24 +160,24 @@ def show_statistics(df):
     print(f"  Smallest cluster: {df['semantic_cluster_id'].value_counts().min()} characters")
 
 def main():
-    """Main function."""
+    # main function
     print("="*80)
     print("MYTHOLOGY VS NARRATIVE ANALYSIS - RESULTS EXPLORATION")
     print("="*80)
     
-    # Load data
+    # load data
     df = load_results()
     
-    # Show statistics
+    # show statistics
     show_statistics(df)
     
-    # Identify mythological anchors
+    # identify mythological anchors
     candidates = identify_mythological_anchors(df)
     
-    # Display all clusters
+    # display all clusters
     display_all_clusters(df)
     
-    # Compare some interesting characters
+    # compare some interesting characters
     print("\n" + "="*80)
     print("INTERESTING CHARACTER COMPARISONS")
     print("="*80)
@@ -200,4 +199,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

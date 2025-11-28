@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
-"""
-Compare Portal-based Factions (16) vs Semantic Clusters (16).
-This allows direct comparison between affiliation-based grouping and text-based grouping.
-"""
+# compares portal-based factions (16) vs semantic clusters (16)
+# allows direct comparison between affiliation-based grouping and text-based grouping
 
 import pandas as pd
 import numpy as np
@@ -13,7 +11,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 def load_network_with_portals():
-    """Load the network to get portal information."""
+    # loads the network to get portal information
     from config import PICKLE_FILTERED_FILE
     
     path = Path(PICKLE_FILTERED_FILE)
@@ -26,7 +24,7 @@ def load_network_with_portals():
     return G
 
 def load_results():
-    """Load the mythology analysis results."""
+    # loads the mythology analysis results
     csv_path = Path("data/mythology_vs_narrative_analysis.csv")
     if not csv_path.exists():
         csv_path = Path(__file__).parent.parent / "data/mythology_vs_narrative_analysis.csv"
@@ -35,32 +33,32 @@ def load_results():
     return df
 
 def get_portal_from_node(G, node_id):
-    """Extract portal from node attributes."""
+    # extracts portal from node attributes
     node_data = G.nodes.get(node_id, {})
     portals = node_data.get('portals', '')
     if portals:
-        # Portals are stored as comma-separated string
+        # portals are stored as comma-separated string
         portal_list = [p.strip() for p in str(portals).split(',') if p.strip()]
         if portal_list:
-            return portal_list[0]  # Use first portal
+            return portal_list[0]  # use first portal
     return None
 
 def create_portal_cluster_comparison(df, G):
-    """Create comparison between portals and semantic clusters."""
+    # creates comparison between portals and semantic clusters
     print("="*80)
     print("PORTAL vs SEMANTIC CLUSTER COMPARISON")
     print("="*80)
     
-    # Add portal information to dataframe
+    # add portal information to dataframe
     df['portal'] = df['node_id'].apply(lambda x: get_portal_from_node(G, x))
     
-    # Filter to nodes with both portal and cluster
+    # filter to nodes with both portal and cluster
     valid_df = df.dropna(subset=['portal', 'semantic_cluster_id']).copy()
     
     print(f"\nNodes with both portal and semantic cluster: {len(valid_df)}")
     print(f"Nodes without portal: {len(df) - len(valid_df)}")
     
-    # Create confusion matrix: Portal (rows) vs Semantic Cluster (columns)
+    # create confusion matrix: portal (rows) vs semantic cluster (columns)
     portals = sorted(valid_df['portal'].unique())
     clusters = sorted(valid_df['semantic_cluster_id'].unique())
     
@@ -75,7 +73,7 @@ def create_portal_cluster_comparison(df, G):
             cluster_idx = clusters.index(cluster)
             confusion_matrix[portal_idx, cluster_idx] += 1
     
-    # Create DataFrame for easier viewing
+    # create dataframe for easier viewing
     confusion_df = pd.DataFrame(
         confusion_matrix,
         index=portals,
@@ -88,7 +86,7 @@ def create_portal_cluster_comparison(df, G):
     print("\n(Values show number of characters in each Portal-Cluster combination)")
     print(confusion_df.to_string())
     
-    # Calculate statistics
+    # calculate statistics
     print("\n" + "="*80)
     print("PORTAL STATISTICS")
     print("="*80)
@@ -98,9 +96,18 @@ def create_portal_cluster_comparison(df, G):
         portal_chars = valid_df[valid_df['portal'] == portal]
         n_chars = len(portal_chars)
         n_clusters = portal_chars['semantic_cluster_id'].nunique()
-        dominant_cluster = portal_chars['semantic_cluster_id'].mode()[0] if len(portal_chars) > 0 else None
-        dominant_count = len(portal_chars[portal_chars['semantic_cluster_id'] == dominant_cluster]) if dominant_cluster is not None else 0
-        dominant_pct = (dominant_count / n_chars * 100) if n_chars > 0 else 0
+        if len(portal_chars) > 0:
+            dominant_cluster = portal_chars['semantic_cluster_id'].mode()[0]
+        else:
+            dominant_cluster = None
+        if dominant_cluster is not None:
+            dominant_count = len(portal_chars[portal_chars['semantic_cluster_id'] == dominant_cluster])
+        else:
+            dominant_count = 0
+        if n_chars > 0:
+            dominant_pct = (dominant_count / n_chars * 100)
+        else:
+            dominant_pct = 0
         
         portal_stats.append({
             'Portal': portal,
@@ -113,7 +120,7 @@ def create_portal_cluster_comparison(df, G):
     portal_stats_df = pd.DataFrame(portal_stats)
     print(portal_stats_df.to_string(index=False))
     
-    # Calculate cluster statistics
+    # calculate cluster statistics
     print("\n" + "="*80)
     print("SEMANTIC CLUSTER STATISTICS")
     print("="*80)
@@ -123,9 +130,18 @@ def create_portal_cluster_comparison(df, G):
         cluster_chars = valid_df[valid_df['semantic_cluster_id'] == cluster]
         n_chars = len(cluster_chars)
         n_portals = cluster_chars['portal'].nunique()
-        dominant_portal = cluster_chars['portal'].mode()[0] if len(cluster_chars) > 0 else None
-        dominant_count = len(cluster_chars[cluster_chars['portal'] == dominant_portal]) if dominant_portal is not None else 0
-        dominant_pct = (dominant_count / n_chars * 100) if n_chars > 0 else 0
+        if len(cluster_chars) > 0:
+            dominant_portal = cluster_chars['portal'].mode()[0]
+        else:
+            dominant_portal = None
+        if dominant_portal is not None:
+            dominant_count = len(cluster_chars[cluster_chars['portal'] == dominant_portal])
+        else:
+            dominant_count = 0
+        if n_chars > 0:
+            dominant_pct = (dominant_count / n_chars * 100)
+        else:
+            dominant_pct = 0
         
         cluster_stats.append({
             'Cluster': int(cluster),
@@ -138,7 +154,7 @@ def create_portal_cluster_comparison(df, G):
     cluster_stats_df = pd.DataFrame(cluster_stats)
     print(cluster_stats_df.to_string(index=False))
     
-    # Visualize confusion matrix
+    # visualize confusion matrix
     plt.figure(figsize=(14, 10))
     sns.heatmap(confusion_matrix, 
                 annot=True, 
@@ -162,12 +178,12 @@ def create_portal_cluster_comparison(df, G):
     print(f"\nSaved confusion matrix to {output_path}")
     plt.close()
     
-    # Calculate alignment metrics
+    # calculate alignment metrics
     print("\n" + "="*80)
     print("ALIGNMENT METRICS")
     print("="*80)
     
-    # For each portal, what % of characters are in the dominant cluster?
+    # for each portal, what % of characters are in the dominant cluster?
     portal_alignment = []
     for portal in portals:
         portal_chars = valid_df[valid_df['portal'] == portal]
@@ -181,6 +197,7 @@ def create_portal_cluster_comparison(df, G):
             })
     
     alignment_df = pd.DataFrame(portal_alignment)
+    # sort by alignment %
     alignment_df = alignment_df.sort_values('Alignment %', key=lambda x: x.str.rstrip('%').astype(float), ascending=False)
     print("\nPortal Alignment (how well each portal maps to a single semantic cluster):")
     print(alignment_df.to_string(index=False))
@@ -188,16 +205,16 @@ def create_portal_cluster_comparison(df, G):
     return confusion_df, portal_stats_df, cluster_stats_df
 
 def main():
-    """Main function."""
+    # main function
     print("="*80)
     print("PORTAL vs SEMANTIC CLUSTER COMPARISON ANALYSIS")
     print("="*80)
     
-    # Load data
+    # load data
     G = load_network_with_portals()
     df = load_results()
     
-    # Create comparison
+    # create comparison
     confusion_df, portal_stats, cluster_stats = create_portal_cluster_comparison(df, G)
     
     print("\n" + "="*80)
@@ -211,4 +228,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

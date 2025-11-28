@@ -1,10 +1,10 @@
-"""Helper functions for network creation."""
+# helper functions for network creation stuff
 import re
 import json
 from pathlib import Path
 
 
-# Constants
+# constants
 MAIN_PORTALS = {
     "Adeptus Custodes", "Mechanicum", "Astra Militarum", "Chaos",
     "Drukhari", "Asuryani", "Genestealer Cults", "Imperium",
@@ -24,13 +24,12 @@ CHARACTER_EXCLUDE_PATTERNS = [
 ]
 
 
-# Portal name normalization
 def normalize_portal_name(portal_name):
-    """Normalize portal names (e.g., SpaceMarines -> SpaceMarine)."""
+    # normalizes portal names like SpaceMarines -> SpaceMarine
     if not portal_name:
         return portal_name
     
-    # Common plural patterns
+    # common plural patterns
     patterns = [
         (r'SpaceMarines$', 'SpaceMarine'),
         (r'DarkAngels$', 'DarkAngel'),
@@ -55,24 +54,24 @@ def normalize_portal_name(portal_name):
 
 
 def camel_case_to_spaced(name):
-    """Convert camelCase to spaced format (e.g., 'AstraMilitarum' -> 'Astra Militarum')."""
+    # converts camelCase to spaced like 'AstraMilitarum' -> 'Astra Militarum'
     return re.sub(r'(?<!^)(?=[A-Z])', ' ', name).strip()
 
 
 def _generate_name_variations(name):
-    """Generate common name variations for matching."""
+    # makes different variations of a name for matching
     spaced = camel_case_to_spaced(name)
-    return [
+    variations = [
         name, spaced,
         name.replace("_", " "), name.replace(" ", "_"),
         name.replace("_", ""), name.replace(" ", ""),
         spaced.replace(" ", "_"), spaced.replace(" ", "")
     ]
+    return variations
 
 
-# Portal mapping
 def load_portal_mapping(portal_mapping_file):
-    """Load portal mapping from JSON file."""
+    # loads portal mapping from json file
     if not portal_mapping_file.exists():
         return {}
     with open(portal_mapping_file, 'r', encoding='utf-8') as f:
@@ -80,38 +79,42 @@ def load_portal_mapping(portal_mapping_file):
 
 
 def is_main_portal(portal_name):
-    """Check if portal name is one of the 16 main portals."""
+    # checks if portal is one of the 16 main ones
     if not portal_name:
         return False
     
     portal_lower = portal_name.lower()
     spaced_lower = camel_case_to_spaced(portal_name).lower()
     
-    return any(mp.lower() == portal_lower or mp.lower() == spaced_lower 
-               for mp in MAIN_PORTALS)
+    for mp in MAIN_PORTALS:
+        if mp.lower() == portal_lower or mp.lower() == spaced_lower:
+            return True
+    return False
 
 
 def match_portal_to_key(portal_name, portal_mapping):
-    """Match portal name to a key in portal mapping using various name variations."""
+    # tries to match portal name to a key in mapping using variations
     if not portal_name or not portal_mapping:
         return None
     
-    # Try exact match and variations
-    for variation in _generate_name_variations(portal_name):
+    # try exact match and variations
+    variations = _generate_name_variations(portal_name)
+    for variation in variations:
         if variation in portal_mapping:
             return variation
     
-    # Try case-insensitive match
+    # try case insensitive
     portal_lower = portal_name.lower()
     spaced_lower = camel_case_to_spaced(portal_name).lower()
     for key in portal_mapping.keys():
         if key.lower() in (portal_lower, spaced_lower):
             return key
     
-    # Try normalized variations
+    # try normalized
     normalized = normalize_portal_name(portal_name)
     if normalized and normalized != portal_name:
-        for variation in _generate_name_variations(normalized):
+        normalized_variations = _generate_name_variations(normalized)
+        for variation in normalized_variations:
             if variation in portal_mapping:
                 return variation
     
@@ -119,11 +122,11 @@ def match_portal_to_key(portal_name, portal_mapping):
 
 
 def map_portal_to_main_portals(portal_name, portal_mapping):
-    """Map portal name to one of the 16 main portals."""
+    # maps portal name to one of the 16 main portals
     if not portal_name:
         return None
     
-    # Check if already a main portal
+    # check if already main portal
     if is_main_portal(portal_name):
         spaced = camel_case_to_spaced(portal_name)
         for main_portal in MAIN_PORTALS:
@@ -131,7 +134,7 @@ def map_portal_to_main_portals(portal_name, portal_mapping):
                 return main_portal
         return portal_name
     
-    # Use mapping file
+    # use mapping file
     if not portal_mapping:
         return None
     
@@ -143,24 +146,24 @@ def map_portal_to_main_portals(portal_name, portal_mapping):
     if not main_portals:
         return None
     
-    # Return last portal if multiple (conflict resolution)
-    return main_portals[-1] if isinstance(main_portals, list) else main_portals
+    # return last portal if multiple (conflict resolution)
+    if isinstance(main_portals, list):
+        return main_portals[-1]
+    else:
+        return main_portals
 
 
 def extract_portals(wikitext, portal_mapping=None):
-    """Extract portal names from wikitext and map to main portals.
-    
-    Extracts {{NamePortal}} patterns and maps to 16 main portals.
-    Returns list with single portal (last one if multiple found).
-    """
+    # extracts portal names from wikitext and maps to main portals
+    # returns list with single portal (last one if multiple found)
     if not wikitext:
         return []
     
-    # Extract portal templates
+    # extract portal templates
     portal_pattern = r'\{\{([A-Za-z0-9_]+Portal)\}\}'
     portals = re.findall(portal_pattern, wikitext)
     
-    # Clean and normalize
+    # clean and normalize
     cleaned_portals = []
     for portal in portals:
         cleaned = portal.replace('Portal', '').strip()
@@ -169,52 +172,65 @@ def extract_portals(wikitext, portal_mapping=None):
             if normalized:
                 cleaned_portals.append(normalized)
     
-    # If no mapping, return last unique portal
+    # if no mapping, return last unique portal
     if not portal_mapping:
-        unique_portals = list(dict.fromkeys(cleaned_portals))  # Preserves order
-        return [unique_portals[-1]] if unique_portals else []
+        unique_portals = list(dict.fromkeys(cleaned_portals))  # preserves order
+        if unique_portals:
+            return [unique_portals[-1]]
+        else:
+            return []
     
-    # Map to main portals
+    # map to main portals
     main_portals = []
     for portal in cleaned_portals:
         main_portal = map_portal_to_main_portals(portal, portal_mapping)
         if main_portal:
             main_portals.append(main_portal)
     
-    # Return last unique portal
+    # return last unique portal
     unique_portals = list(dict.fromkeys(main_portals))
-    return [unique_portals[-1]] if unique_portals else []
+    if unique_portals:
+        return [unique_portals[-1]]
+    else:
+        return []
 
 
-# Character filtering
 def is_character(title):
-    """Check if title represents a character (not a list, formation, etc.)."""
+    # checks if title is a character (not a list, formation, etc)
     title_lower = title.lower()
-    return not any(re.search(pattern, title_lower) 
-                   for pattern in CHARACTER_EXCLUDE_PATTERNS)
+    for pattern in CHARACTER_EXCLUDE_PATTERNS:
+        if re.search(pattern, title_lower):
+            return False
+    return True
 
 
 def extract_race(affiliations):
-    """Extract race/species from affiliations. Returns first race found or None."""
+    # gets race/species from affiliations, returns first race found or None
     if not affiliations:
         return None
-    return next((aff for aff in affiliations if aff in GENERAL_RACES), None)
+    for aff in affiliations:
+        if aff in GENERAL_RACES:
+            return aff
+    return None
 
 
 def determine_primary_affiliation(affiliations):
-    """Determine primary affiliation, excluding races.
-    
-    Races are stored separately. Returns first specific affiliation or None.
-    """
+    # gets primary affiliation, excluding races
+    # races stored separately. returns first specific affiliation or None
     if not affiliations:
         return None
-    specific = [aff for aff in affiliations if aff not in GENERAL_RACES]
-    return specific[0] if specific else None
+    specific = []
+    for aff in affiliations:
+        if aff not in GENERAL_RACES:
+            specific.append(aff)
+    if specific:
+        return specific[0]
+    else:
+        return None
 
 
-# File loading
 def load_batch_files(raw_data_path, batch_pattern):
-    """Load all pages from batch JSON files."""
+    # loads all pages from batch json files
     batch_files = sorted(raw_data_path.glob(batch_pattern))
     all_pages = {}
     
@@ -227,9 +243,8 @@ def load_batch_files(raw_data_path, batch_pattern):
     return all_pages, batch_files
 
 
-# Character title mapping
 def create_character_title_map(characters):
-    """Create mapping from character title variations to canonical titles."""
+    # creates mapping from character title variations to canonical titles
     character_titles = set()
     character_title_map = {}
     
@@ -240,26 +255,28 @@ def create_character_title_map(characters):
         
         character_titles.update([title, name, file_name])
         
-        # Map variations to canonical title
-        character_title_map.update({
-            title: title,
-            name: title,
-            file_name: title,
-            title.replace("_", " "): title,
-            name.replace(" ", "_"): title
-        })
+        # map variations to canonical title
+        character_title_map[title] = title
+        character_title_map[name] = title
+        character_title_map[file_name] = title
+        character_title_map[title.replace("_", " ")] = title
+        character_title_map[name.replace(" ", "_")] = title
     
     return character_titles, character_title_map
 
 
 def find_character_title(link, character_title_map):
-    """Find canonical character title for a given link."""
+    # finds canonical character title for a given link
     if link in character_title_map:
         return character_title_map[link]
     
-    # Try space/underscore variations
-    for variation in [link.replace(" ", "_"), link.replace("_", " ")]:
-        if variation in character_title_map:
-            return character_title_map[variation]
+    # try space/underscore variations
+    variation1 = link.replace(" ", "_")
+    if variation1 in character_title_map:
+        return character_title_map[variation1]
+    
+    variation2 = link.replace("_", " ")
+    if variation2 in character_title_map:
+        return character_title_map[variation2]
     
     return None

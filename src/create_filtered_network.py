@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
-"""
-Create filtered undirected network by keeping only the largest connected component.
-
-This script:
-1. Loads the original network from pickle file
-2. Converts it to an undirected graph
-3. Keeps only the largest connected component (removes all nodes not connected to main network)
-4. Removes nodes with degree < 2 (iteratively until no more can be removed)
-5. Saves the filtered network in multiple formats
-"""
+# creates filtered undirected network by keeping only the largest connected component
+# this script:
+# 1. loads the original network from pickle file
+# 2. converts it to an undirected graph
+# 3. keeps only the largest connected component (removes all nodes not connected to main network)
+# 4. removes nodes with degree < 2 (iteratively until no more can be removed)
+# 5. saves the filtered network in multiple formats
 
 import pickle
 import networkx as nx
@@ -18,7 +15,7 @@ from config import DATA_PATH, PICKLE_FILE, GEXF_FILTERED_FILE, PICKLE_FILTERED_F
 
 
 def load_network():
-    """Load the network from pickle file."""
+    # loads the network from pickle file
     print("="*60)
     print("Loading Network")
     print("="*60)
@@ -38,12 +35,12 @@ def load_network():
 
 
 def convert_to_undirected(G):
-    """Convert directed graph to undirected graph."""
+    # converts directed graph to undirected graph
     print("\n" + "="*60)
     print("Converting to Undirected Graph")
     print("="*60)
     
-    # Convert to undirected (combines parallel edges)
+    # convert to undirected (combines parallel edges)
     G_undirected = G.to_undirected()
     
     print(f"Converted to undirected graph:")
@@ -54,12 +51,12 @@ def convert_to_undirected(G):
 
 
 def keep_largest_component(G):
-    """Keep only the largest connected component, removing all other nodes."""
+    # keeps only the largest connected component, removing all other nodes
     print("\n" + "="*60)
     print("Keeping Only Largest Connected Component")
     print("="*60)
     
-    # Find all connected components
+    # find all connected components
     components = list(nx.connected_components(G))
     print(f"Found {len(components)} connected components")
     
@@ -67,11 +64,11 @@ def keep_largest_component(G):
         print("Warning: No connected components found!")
         return G.copy(), []
     
-    # Find the largest component
+    # find the largest component
     largest_component = max(components, key=len)
     print(f"Largest component size: {len(largest_component)} nodes")
     
-    # Show component size distribution
+    # show component size distribution
     component_sizes = sorted([len(c) for c in components], reverse=True)
     print(f"\nComponent size distribution:")
     print(f"  Largest: {component_sizes[0]} nodes")
@@ -81,7 +78,7 @@ def keep_largest_component(G):
         print(f"  Total components: {len(component_sizes)}")
         print(f"  Other components: {component_sizes[2:]} nodes each")
     
-    # Find nodes to remove (all nodes not in largest component)
+    # find nodes to remove (all nodes not in largest component)
     all_nodes = set(G.nodes())
     nodes_to_remove = all_nodes - largest_component
     
@@ -89,13 +86,14 @@ def keep_largest_component(G):
     
     if nodes_to_remove:
         print(f"\nSample removed nodes (first 10):")
-        for node in list(nodes_to_remove)[:10]:
+        removed_list = list(nodes_to_remove)[:10]
+        for node in removed_list:
             node_name = G.nodes[node].get('name', node)
             print(f"  {node_name}")
         if len(nodes_to_remove) > 10:
             print(f"  ... and {len(nodes_to_remove) - 10} more")
     
-    # Create a subgraph with only the largest component
+    # create a subgraph with only the largest component
     G_filtered = G.subgraph(largest_component).copy()
     
     print(f"\nAfter filtering:")
@@ -108,7 +106,7 @@ def keep_largest_component(G):
 
 
 def remove_low_degree_nodes(G, min_degree=2):
-    """Remove nodes with degree < min_degree iteratively until no more can be removed."""
+    # removes nodes with degree < min_degree iteratively until no more can be removed
     print("\n" + "="*60)
     print(f"Removing Nodes with Degree < {min_degree}")
     print("="*60)
@@ -119,8 +117,11 @@ def remove_low_degree_nodes(G, min_degree=2):
     
     while True:
         iteration += 1
-        # Find nodes with degree < min_degree
-        nodes_to_remove = [n for n in G_filtered.nodes() if G_filtered.degree(n) < min_degree]
+        # find nodes with degree < min_degree
+        nodes_to_remove = []
+        for n in G_filtered.nodes():
+            if G_filtered.degree(n) < min_degree:
+                nodes_to_remove.append(n)
         
         if not nodes_to_remove:
             break
@@ -136,7 +137,7 @@ def remove_low_degree_nodes(G, min_degree=2):
                 if len(nodes_to_remove) > 10:
                     print(f"  ... and {len(nodes_to_remove) - 10} more")
         
-        # Remove the nodes
+        # remove the nodes
         G_filtered.remove_nodes_from(nodes_to_remove)
         total_removed += len(nodes_to_remove)
         
@@ -154,28 +155,29 @@ def remove_low_degree_nodes(G, min_degree=2):
 
 
 def save_filtered_network(G_filtered):
-    """Save the filtered network in multiple formats."""
+    # saves the filtered network in multiple formats
     print("\n" + "="*60)
     print("Saving Filtered Network")
     print("="*60)
     
-    # Prepare graph for export (convert lists to strings)
+    # prepare graph for export (convert lists to strings)
     G_export = prepare_graph_for_export(G_filtered)
     
-    # Save GEXF
+    # save gexf
     try:
         if GEXF_FILTERED_FILE.exists():
             GEXF_FILTERED_FILE.unlink()
         nx.write_gexf(G_export, GEXF_FILTERED_FILE)
         if GEXF_FILTERED_FILE.exists() and GEXF_FILTERED_FILE.stat().st_size > 0:
-            print(f"Saved filtered graph to {GEXF_FILTERED_FILE} ({GEXF_FILTERED_FILE.stat().st_size:,} bytes)")
+            size = GEXF_FILTERED_FILE.stat().st_size
+            print(f"Saved filtered graph to {GEXF_FILTERED_FILE} ({size:,} bytes)")
         else:
             print(f"Warning: GEXF file was created but appears empty")
     except Exception as e:
         print(f"Warning: Could not save GEXF format: {e}")
         print(f"  Error type: {type(e).__name__}")
     
-    # Save Pickle (preserves all data types)
+    # save pickle (preserves all data types)
     with open(PICKLE_FILTERED_FILE, 'wb') as f:
         pickle.dump(G_filtered, f)
     print(f"Saved filtered graph to {PICKLE_FILTERED_FILE} (preserves all data types including lists)")
@@ -190,33 +192,35 @@ def save_filtered_network(G_filtered):
 
 
 def prepare_graph_for_export(G):
-    """Prepare graph for export by converting lists to strings."""
+    # prepares graph for export by converting lists to strings
     G_export = G.copy()
     
     for node in G_export.nodes():
         node_data = G_export.nodes[node]
         
-        # Convert all_affiliations list to string
+        # convert all_affiliations list to string
         if 'all_affiliations' in node_data:
             if isinstance(node_data['all_affiliations'], list):
-                node_data['all_affiliations'] = ', '.join(
-                    str(x) for x in node_data['all_affiliations'] if x is not None
-                )
+                affil_strs = []
+                for x in node_data['all_affiliations']:
+                    if x is not None:
+                        affil_strs.append(str(x))
+                node_data['all_affiliations'] = ', '.join(affil_strs)
             elif node_data['all_affiliations'] is None:
                 node_data['all_affiliations'] = ''
         
-        # Remove portal_list (keep only portals string)
+        # remove portal_list (keep only portals string)
         if 'portal_list' in node_data:
             del node_data['portal_list']
         
-        # Convert None and non-serializable types
+        # convert None and non-serializable types
         for key, value in list(node_data.items()):
             if value is None:
                 node_data[key] = ''
             elif isinstance(value, (list, tuple, dict)):
                 node_data[key] = str(value)
     
-    # Convert edge attributes
+    # convert edge attributes
     for u, v, edge_data in G_export.edges(data=True):
         for key, value in list(edge_data.items()):
             if value is None:
@@ -228,7 +232,7 @@ def prepare_graph_for_export(G):
 
 
 def print_network_statistics(G, G_filtered):
-    """Print comparison statistics."""
+    # prints comparison statistics
     print("\n" + "="*60)
     print("NETWORK STATISTICS COMPARISON")
     print("="*60)
@@ -244,7 +248,7 @@ def print_network_statistics(G, G_filtered):
     print(f"  Density: {nx.density(G_filtered):.6f}")
     
     if G_filtered.number_of_nodes() > 0:
-        # Connected components (should be 1 after filtering)
+        # connected components (should be 1 after filtering)
         components = list(nx.connected_components(G_filtered))
         print(f"\nConnected Components:")
         print(f"  Number of components: {len(components)}")
@@ -254,40 +258,43 @@ def print_network_statistics(G, G_filtered):
             print(f"  Warning: Multiple components still present")
             if components:
                 largest_component = max(components, key=len)
-                print(f"  Largest component size: {len(largest_component)} nodes "
-                      f"({100*len(largest_component)/G_filtered.number_of_nodes():.2f}%)")
+                pct = 100*len(largest_component)/G_filtered.number_of_nodes()
+                print(f"  Largest component size: {len(largest_component)} nodes ({pct:.2f}%)")
         
-        # Degree statistics
+        # degree statistics
         degrees = [d for n, d in G_filtered.degree()]
         import numpy as np
         print(f"\nDegree Statistics (filtered network):")
         print(f"  Average degree: {np.mean(degrees):.2f}")
         print(f"  Median degree: {np.median(degrees):.2f}")
-        print(f"  Max degree: {max(degrees) if degrees else 0}")
-        print(f"  Min degree: {min(degrees) if degrees else 0}")
+        if degrees:
+            print(f"  Max degree: {max(degrees)}")
+            print(f"  Min degree: {min(degrees)}")
+        else:
+            print(f"  Max degree: 0")
+            print(f"  Min degree: 0")
 
 
 def main():
-    """Main execution function."""
-    # Step 1: Load network
+    # main execution function
+    # step 1: load network
     G = load_network()
     
-    # Step 2: Convert to undirected
+    # step 2: convert to undirected
     G_undirected = convert_to_undirected(G)
     
-    # Step 3: Keep only largest connected component
+    # step 3: keep only largest connected component
     G_filtered, removed_nodes_component = keep_largest_component(G_undirected)
     
-    # Step 4: Remove nodes with degree < 2
+    # step 4: remove nodes with degree < 2
     G_filtered, removed_nodes_degree = remove_low_degree_nodes(G_filtered, min_degree=2)
     
-    # Step 5: Print statistics
+    # step 5: print statistics
     print_network_statistics(G, G_filtered)
     
-    # Step 6: Save filtered network
+    # step 6: save filtered network
     save_filtered_network(G_filtered)
 
 
 if __name__ == "__main__":
     main()
-

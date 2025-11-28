@@ -5,25 +5,19 @@ import numpy as np
 from pathlib import Path
 
 def plot_mythology_scatter(df, output_path='images/mythology_scatter.png'):
-    """
-    Scatter Plot: X-axis = Betweenness Centrality (Log Scale), Y-axis = Neighbor Semantic Consistency.
-    Color dots by their Semantic Cluster.
-    """
-    # Ensure output directory exists
+    # scatter plot: x-axis = betweenness centrality (log scale), y-axis = neighbor semantic consistency
+    # color dots by their semantic cluster
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
 
     plt.figure(figsize=(12, 8))
     
-    # Filter data
+    # filter data
     plot_df = df.dropna(subset=['betweenness', 'neighbor_consistency', 'semantic_cluster_id']).copy()
     
     if len(plot_df) == 0:
         print("No data to plot.")
         return
 
-    # Handle 0 betweenness for log scale (add small epsilon)
-    # plot_df['log_betweenness'] = np.log10(plot_df['betweenness'] + 1e-9)
-    
     try:
         sns.scatterplot(
             data=plot_df,
@@ -40,7 +34,7 @@ def plot_mythology_scatter(df, output_path='images/mythology_scatter.png'):
         plt.ylabel('Neighbor Semantic Consistency')
         plt.title('Narrative Independence vs Structural Centrality\n(Highlighting Mythological Anchors)')
         
-        # Move legend outside if many clusters
+        # move legend outside if many clusters
         plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', title='Semantic Cluster', ncol=2)
         
         plt.tight_layout()
@@ -51,10 +45,7 @@ def plot_mythology_scatter(df, output_path='images/mythology_scatter.png'):
         print(f"Error plotting: {e}")
 
 def export_results(df, output_path='data/mythology_vs_narrative_analysis.csv'):
-    """
-    Save a .csv file with specific columns.
-    """
-    # Ensure output directory exists
+    # saves a csv file with specific columns
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
 
     columns = [
@@ -67,9 +58,8 @@ def export_results(df, output_path='data/mythology_vs_narrative_analysis.csv'):
         'neighbor_consistency'
     ]
     
-    # Ensure columns exist
+    # ensure columns exist
     export_cols = [c for c in columns if c in df.columns]
     
     df[export_cols].to_csv(output_path, index=False)
     print(f"Results exported to {output_path}")
-

@@ -6,14 +6,9 @@ import pandas as pd
 from pathlib import Path
 
 def load_graph(edges_file='data/lexicanum_edges.json', use_filtered=True):
-    """
-    Load the graph from the edges JSON file, optionally filtered.
+    # loads graph from edges json file, optionally filtered
+    # use_filtered = True means only include nodes from filtered network
     
-    Args:
-        edges_file: Path to edges JSON file
-        use_filtered: If True, only include nodes from the filtered network
-    """
-    # If using filtered, first get the list of valid nodes from filtered network
     valid_nodes = None
     if use_filtered:
         try:
@@ -33,7 +28,7 @@ def load_graph(edges_file='data/lexicanum_edges.json', use_filtered=True):
         except Exception as e:
             print(f"Warning: Could not load filtered network: {e}. Using full network.")
     
-    # Load edges
+    # load edges
     path = Path(edges_file)
     if not path.exists():
         path = Path(__file__).parent.parent / edges_file
@@ -43,13 +38,13 @@ def load_graph(edges_file='data/lexicanum_edges.json', use_filtered=True):
     
     G = nx.DiGraph()
     
-    # Add edges, filtering if needed
+    # add edges, filtering if needed
     edges_added = 0
     for edge in edges_data:
         source = edge['source']
         target = edge['target']
         
-        # If using filtered network, only add edges between valid nodes
+        # if using filtered, only add edges between valid nodes
         if valid_nodes is not None:
             if source not in valid_nodes or target not in valid_nodes:
                 continue
@@ -64,14 +59,11 @@ def load_graph(edges_file='data/lexicanum_edges.json', use_filtered=True):
     return G
 
 def compute_topology_metrics(G):
-    """
-    Compute topological metrics: Betweenness, PageRank, Clustering, Communities.
-    Returns a DataFrame with these metrics.
-    """
-    # Betweenness Centrality
-    # For 12k nodes, this might take a few minutes.
+    # computes topological metrics: betweenness, pagerank, clustering, communities
+    # returns dataframe with these metrics
+    
+    # betweenness centrality - might take a while for big networks
     print("Calculating Betweenness Centrality...")
-    # Using k=None for exact calculation as per requirements, but could be approximated with k=1000
     betweenness = nx.betweenness_centrality(G)
     
     print("Calculating PageRank...")
@@ -80,13 +72,12 @@ def compute_topology_metrics(G):
     print("Calculating Clustering Coefficient...")
     clustering = nx.clustering(G)
     
-    # Community Detection (Louvain)
-    # Louvain requires undirected graph.
+    # community detection (louvain) - needs undirected graph
     print("Calculating Louvain Communities...")
     G_undirected = G.to_undirected()
     partition = community_louvain.best_partition(G_undirected)
     
-    # Combine into DataFrame
+    # combine into dataframe
     nodes = list(G.nodes())
     data = {
         'node_id': nodes,
@@ -109,4 +100,3 @@ if __name__ == "__main__":
         print("Topology metrics saved to data/topology_metrics.csv")
     except Exception as e:
         print(f"Error: {e}")
-
