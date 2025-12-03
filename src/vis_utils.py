@@ -30,6 +30,7 @@ def plot_mythology_scatter(df, output_path='images/mythology_scatter.png'):
         plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', title='Semantic Cluster', ncol=2)
         plt.tight_layout()
         plt.savefig(output_path, dpi=300)
+        plt.show()
         plt.close()
     except Exception as e:
         print(f"Error plotting: {e}")

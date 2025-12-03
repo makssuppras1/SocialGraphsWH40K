@@ -46,7 +46,7 @@ def generate_embeddings(texts, model_name='all-MiniLM-L6-v2', batch_size=32):
     model = SentenceTransformer(model_name)
     return model.encode(texts, batch_size=batch_size, show_progress_bar=False)
 
-def cluster_embeddings(embeddings, n_clusters=20):
+def cluster_embeddings(embeddings, n_clusters=16):
     # clusters embeddings using k-means
     n_samples = len(embeddings)
     if n_samples < n_clusters:
