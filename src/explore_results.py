@@ -74,6 +74,10 @@ def show_statistics(df):
           f"Min: {df['neighbor_consistency'].min():.4f}, Max: {df['neighbor_consistency'].max():.4f}")
     print(f"Semantic clusters: {df['semantic_cluster_id'].nunique()}")
 
+def mythological_vs_narrative_network(df):
+    nx.write
+    
+
 def main():
     df = load_results()
     show_statistics(df)
@@ -82,7 +86,7 @@ def main():
     
     interesting_chars = [
         "Roboute Guilliman", "Emperor of Mankind", "Ibram Gaunt",
-        "Rogal Dorn", "Sanguinius", "Lion El'Jonson"
+        "Rogal Dorn", "Sanguinius", "Lion El'Jonson", "Angron", "Ezekyle Abaddon"
     ]
     compare_characters(df, interesting_chars)
 
