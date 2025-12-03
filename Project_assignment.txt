@@ -1,0 +1,31 @@
+Project Assignment B (from the teacher)
+
+Ok. So a paper and a finding. What's that about?
+
+What I'm trying to do is to push you to go beyond simply running the analyses we did on the musicians and actually use your skills to do some science. By asking you to present a finding, what I want is for you to think carefully about the results of your analyses. What is it that you learn through your analysis? Once you can answer that, you have the first steps towards a real research finding 🤓
+
+It doesn't have to be something super fancy. Maybe your finding is just that the houses in Game of Thrones don't align with the communities in the networks. Then think about why that's the case given what you know about the show, and run further analyses to support and expand your theories. Or you find that the most important character in the Simpson's is Moe the bartender, then you confirm using additional centrality measures and investigate if this changes over time in the episodes. If you find change-points, when do they happen. Etc. Perhaps you have a hypothesis that you'd like to disprove. You can of course also be much more ambitious - I'm giving these examples to provide a sense that it's perhaps not so hard.
+
+The deliverables for Project Assignment B are.
+
+A Paper (.pdf format). The paper should contain your analysis, it should tell the story about the data and the research finding.
+An Explainer Notebook (.ipynb format). The Notebook should contain all the behind the scenes stuff, You should link to the notebook from the paper (in the Methods section).
+More about the paper
+
+The paper should have all the elements that are in the templates (links below):
+
+Abstract
+Significance Statement
+Introduction
+Results
+Discussion
+Methods
+References
+
+In the video I discuss about tips & tricks that will bring success. Also use the template's author contributions (it is not OK simply to write "All group members contributed equally".).
+
+BUT YOU ONLY HAVE MAX 5 PAGES (everything must be within those 5 pages, also the references) and max 5 figures. Less/shorter is OK, longer is not OK.
+
+Make sure that you use references when they're needed and follow academic standards.
+
+TIP: When you have an idea for analysis, do a search to see if someone already studied your dataset - or the question you're interested in. There are lots of cool analyses out there that could be an inspiration. And it's OK to use that stuff, just remember to cite the work that you're drawing on (if you copy without citing, then it's cheating ... don't cheat).
