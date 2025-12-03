@@ -15,7 +15,13 @@ from helpers import MAIN_PORTALS
 
 def load_network(use_filtered=True):
     # loads network from pickle file
-    network_file = PICKLE_FILTERED_FILE if use_filtered else PICKLE_FILE
+    # NOTE: Always uses filtered network by default. Set use_filtered=False only if you need the unfiltered network.
+    if not use_filtered:
+        import warnings
+        warnings.warn("Using unfiltered network. All analysis should use the filtered network (use_filtered=True).", UserWarning)
+        network_file = PICKLE_FILE
+    else:
+        network_file = PICKLE_FILTERED_FILE
     
     if not network_file.exists():
         raise FileNotFoundError(f"Network file not found: {network_file}")

@@ -7,6 +7,7 @@ from pathlib import Path
 
 def load_graph(edges_file='data/lexicanum_edges.json', use_filtered=True):
     # loads graph from edges json file, optionally filtered
+    # NOTE: Always uses filtered network by default. Set use_filtered=False only if you need the unfiltered network.
     valid_nodes = None
     if use_filtered:
         try:
@@ -21,6 +22,9 @@ def load_graph(edges_file='data/lexicanum_edges.json', use_filtered=True):
                 valid_nodes = set(G_filtered.nodes())
         except Exception:
             pass
+    else:
+        import warnings
+        warnings.warn("Using unfiltered network. All analysis should use the filtered network (use_filtered=True).", UserWarning)
     
     path = Path(edges_file)
     if not path.exists():
@@ -38,14 +42,18 @@ def load_graph(edges_file='data/lexicanum_edges.json', use_filtered=True):
     return G
 
 def compute_topology_metrics(G):
-    # computes topological metrics: betweenness, pagerank, clustering, communities
+
     betweenness = nx.betweenness_centrality(G)
     pagerank = nx.pagerank(G)
     clustering = nx.clustering(G)
-    
-    # community detection (louvain) - needs undirected graph
     G_undirected = G.to_undirected()
     partition = nx.community.louvain_communities(G_undirected)
+    
+    # Convert partition (list of sets) to node->community_id mapping
+    node_to_community = {}
+    for comm_id, community in enumerate(partition):
+        for node in community:
+            node_to_community[node] = comm_id
     
     nodes = list(G.nodes())
     return pd.DataFrame({
@@ -53,7 +61,7 @@ def compute_topology_metrics(G):
         'betweenness': [betweenness.get(n, 0) for n in nodes],
         'pagerank': [pagerank.get(n, 0) for n in nodes],
         'clustering_coefficient': [clustering.get(n, 0) for n in nodes],
-        'network_community_id': [partition.get(n, 0) for n in nodes]
+        'network_community_id': [node_to_community.get(n, -1) for n in nodes]
     })
 
 if __name__ == "__main__":

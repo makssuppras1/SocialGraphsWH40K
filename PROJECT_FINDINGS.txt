@@ -18,8 +18,8 @@ Network Scale:
 - Filtering: Nodes with degree >= 2, largest connected component
 
 Network Communities (Louvain Algorithm):
-- Number of detected communities: 41
-- Modularity: 0.7789 (very high, indicating strong community structure)
+- Number of detected communities: 43
+- Modularity: 0.7809 (very high, indicating strong community structure)
 
 Semantic Clusters (K-Means on Text Embeddings):
 - Number of clusters: 16 (matching 16 main faction portals)
@@ -71,10 +71,10 @@ Clustering Coefficient:
 ================================================================================
 
 Neighbor Semantic Consistency:
-- Mean: 0.5597
+- Mean: 0.5511
 - Median: 0.5502
-- Range: 0.1317 (Drach'nyen) to 0.9797 (Tynon)
-- Correlation with Betweenness: -0.0769 (weak negative correlation)
+- Range: 0.1317 (Drach'nyen) to 0.9822 (Tynon)
+- Correlation with Betweenness: -0.0667 (weak negative correlation)
 
 Interpretation:
 - High consistency (>0.60): Character's neighbors have similar text themes
@@ -165,46 +165,46 @@ themes (clusters). High alignment means faction has coherent semantic identity.
 
 Portal Alignment Statistics (sorted by alignment %):
 
-1. Adepta Sororitas        85.1% in Cluster 14  (47 characters)
+1. Inquisition             83.6% in Cluster 10  (140 characters)
+   → Highest semantic coherence; Inquisitor characters cluster together
+
+2. Adepta Sororitas        78.7% in Cluster 6   (47 characters)
    → Strong semantic coherence; characters share similar text themes
 
-2. Inquisition             81.3% in Cluster 4   (134 characters)
-   → High semantic coherence; Inquisitor characters cluster together
-
-3. Asuryani                76.8% in Cluster 0   (56 characters)
+3. Asuryani                72.4% in Cluster 0   (58 characters)
    → Good semantic coherence; Eldar characters share themes
 
-4. Necrons                 71.8% in Cluster 0   (39 characters)
+4. Necrons                 59.5% in Cluster 0   (42 characters)
    → Good semantic coherence; Necron characters cluster together
 
-5. Drukhari                61.5% in Cluster 0   (39 characters)
-   → Moderate semantic coherence; Dark Eldar characters share themes
-
-6. Adeptus Custodes        50.0% in Cluster 5   (52 characters)
+5. Astra Militarum         59.2% in Cluster 12  (316 characters)
+   → Cluster 12 represents Imperial Guard narrative cluster
    → Moderate semantic coherence
 
-7. Astra Militarum         45.0% in Cluster 13   (302 characters)
-   → Cluster 13 is strongly Imperial Guard (93.8% Astra Militarum)
-   → Represents "Gaunt's Ghosts" narrative cluster
+6. Drukhari                55.0% in Cluster 0   (40 characters)
+   → Moderate semantic coherence; Dark Eldar characters share themes
 
-8. T'au                    36.8% in Cluster 5   (19 characters)
+7. Adeptus Custodes        49.1% in Cluster 3   (53 characters)
+   → Moderate semantic coherence
+
+8. Mechanicum              30.2% in Cluster 11  (86 characters)
    → Low semantic coherence
 
-9. Mechanicum              25.9% in Cluster 4   (81 characters)
+9. T'au                    24.0% in Cluster 13  (25 characters)
    → Low semantic coherence
 
-10. Imperium               24.0% in Cluster 1   (421 characters)
-    → Very low semantic coherence; umbrella faction spans many themes
-
-11. Chaos                   20.3% in Cluster 9   (754 characters)
+10. Chaos                   16.1% in Cluster 13  (772 characters)
     → Very low semantic coherence; spans all 16 clusters
     → Most diverse faction semantically
 
-12. Space Marines           13.7% in Cluster 7   (1142 characters)
+11. Imperium                16.0% in Cluster 1   (445 characters)
+    → Very low semantic coherence; umbrella faction spans many themes
+
+12. Space Marines           12.5% in Cluster 7   (1207 characters)
     → Extremely low semantic coherence; spans 14 of 16 clusters
     → Most diverse faction; includes many different chapters
 
-Key Finding: Narrative-focused factions (Adepta Sororitas, Inquisition) 
+Key Finding: Narrative-focused factions (Inquisition, Adepta Sororitas) 
 have high semantic coherence, while umbrella factions (Space Marines, Chaos, 
 Imperium) are semantically diverse.
 
@@ -215,7 +215,7 @@ Imperium) are semantically diverse.
 Three-Way Alignment Statistics:
 
 Network Communities:
-- Total communities: 41
+- Total communities: 43
 - Mean portals per community: 5.8
 - Mean semantic clusters per community: 9.2
 - Communities with single portal: 3
@@ -253,7 +253,7 @@ Key Observations:
 Modularity measures how well a partition captures community structure.
 Higher values indicate better community structure.
 
-Network Communities (Louvain): 0.7789
+Network Communities (Louvain): 0.7809
 - Very high modularity
 - Indicates strong structural community organization
 - Communities are well-defined and separated
@@ -269,11 +269,11 @@ Portal Factions: 0.3648
 - Faction labels capture some network structure but less than communities
 
 Key Finding:
-- Network Communities (0.7789) > Portal Factions (0.3648) > Semantic Clusters (0.3056)
-- Network communities are 0.4141 better than faction partition
+- Network Communities (0.7809) > Portal Factions (0.3648) > Semantic Clusters (0.3056)
+- Network communities are 0.4161 better than faction partition
 - This shows: Hyperlink structure encodes narrative relationships better than 
   faction labels or semantic themes alone
-- Improvement: Network communities are 0.41 better than faction partition
+- Improvement: Network communities are 0.42 better than faction partition
 
 ================================================================================
 9. KEY RESEARCH FINDINGS
@@ -287,17 +287,17 @@ FINDING 1: Network Structure Encodes Semantic Themes, Not Faction Labels
   organizational/faction structure
 
 FINDING 2: Semantic Coherence Explains Faction-Community Misalignment
-- High semantic coherence factions (Adepta Sororitas 85.1%) → Better 
+- High semantic coherence factions (Inquisition 83.6%, Adepta Sororitas 78.7%) → Better 
   community alignment
-- Low semantic coherence factions (Space Marines 13.7%) → Poor community 
+- Low semantic coherence factions (Space Marines 12.5%) → Poor community 
   alignment
 - Mechanism: When factions are semantically diverse, network communities 
   split them following semantic themes rather than faction labels
 
 FINDING 3: Mythology vs Narrative Distinction Partially Supported
-- Weak negative correlation (-0.0769) between betweenness and consistency
+- Weak negative correlation (-0.0667) between betweenness and consistency
 - Major figures (Guilliman, Emperor) have high betweenness but moderate 
-  consistency (0.50-0.57)
+  consistency (0.49-0.57)
 - Some narrative agents (Oan Mkoll) have high betweenness with low consistency
 - Conclusion: The distinction exists but is not as clear-cut as hypothesized
 
@@ -324,9 +324,9 @@ ANSWER: Partially, but with important exceptions.
 
 - The network encodes faction structure ONLY to the extent that factions 
   have semantic coherence
-- High semantic coherence factions (Adepta Sororitas, Inquisition) → 
+- High semantic coherence factions (Inquisition 83.6%, Adepta Sororitas 78.7%) → 
   Good alignment with network communities
-- Low semantic coherence factions (Space Marines, Chaos, Imperium) → 
+- Low semantic coherence factions (Space Marines 12.5%, Chaos 16.1%, Imperium 16.0%) → 
   Poor alignment with network communities
 - Overall: Network encodes semantic/narrative structure more than 
   faction structure
@@ -339,13 +339,13 @@ ANSWER: Semantic coherence is the key mechanism.
    - Characters share similar text themes
    - Network communities align with faction because links follow semantic 
      themes
-   - Example: Adepta Sororitas (85% alignment)
+   - Example: Inquisition (83.6% alignment), Adepta Sororitas (78.7% alignment)
 
 2. When factions have low semantic coherence (Portal ≠ Semantic Cluster):
    - Characters span multiple semantic themes
    - Network communities split the faction because links follow semantics, 
      not labels
-   - Example: Space Marines (14% alignment, spans 14 clusters)
+   - Example: Space Marines (12.5% alignment, spans 16 clusters)
 
 3. The Mechanism:
    - Hyperlinks reflect narrative relationships (who appears together in 
@@ -384,7 +384,7 @@ ANSWER: Semantic coherence is the key mechanism.
 ================================================================================
 
 Limitations:
-1. Weak correlation (-0.0769) between betweenness and consistency
+1. Weak correlation (-0.0667) between betweenness and consistency
    - Mythology vs narrative distinction is not as strong as hypothesized
    - May need refined metrics or different approach
 
@@ -406,8 +406,9 @@ Future Work:
 END OF FINDINGS
 ================================================================================
 
-Generated: 2025
+Generated: December 2024
 Dataset: Warhammer 40,000 Lexicanum Wiki
-Network: 3,232 characters, 8,973 edges
-Analysis Methods: NetworkX, Sentence Transformers, K-Means, Louvain
+Network: 3,232 characters, 8,973 edges (filtered network)
+Analysis Methods: NetworkX, Sentence Transformers (all-MiniLM-L6-v2), K-Means, Louvain
+Last Updated: After implementing filtered network-only analysis and improved text cleaning
 

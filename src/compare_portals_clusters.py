@@ -69,7 +69,16 @@ def create_portal_cluster_comparison(df, G):
     
     portal_stats_df = pd.DataFrame(portal_stats)
     
-    # visualize confusion matrix
+    # Create normalized matrix (row-normalized: percentage of each portal in each cluster)
+    normalized_matrix = np.zeros_like(confusion_matrix, dtype=float)
+    for i in range(len(portals)):
+        row_sum = confusion_matrix[i, :].sum()
+        if row_sum > 0:
+            normalized_matrix[i, :] = (confusion_matrix[i, :] / row_sum) * 100
+        else:
+            normalized_matrix[i, :] = 0
+    
+    # visualize raw count confusion matrix
     plt.figure(figsize=(14, 10))
     sns.heatmap(confusion_matrix, 
                 annot=True, 
@@ -81,7 +90,7 @@ def create_portal_cluster_comparison(df, G):
                 linewidths=0.5)
     plt.xlabel('Semantic Clusters', fontsize=12, fontweight='bold')
     plt.ylabel('Portals (Factions)', fontsize=12, fontweight='bold')
-    plt.title('Portal vs Semantic Cluster Comparison\n(16 Factions vs 16 Text-Based Clusters)', 
+    plt.title('Portal vs Semantic Cluster Comparison (Raw Counts)\n(16 Factions vs 16 Text-Based Clusters)', 
               fontsize=14, fontweight='bold', pad=20)
     plt.xticks(rotation=0)
     plt.yticks(rotation=0)
@@ -90,6 +99,31 @@ def create_portal_cluster_comparison(df, G):
     output_path = Path("images/portal_cluster_confusion_matrix.png")
     output_path.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    
+    # visualize normalized confusion matrix (row-normalized percentages)
+    plt.figure(figsize=(14, 10))
+    sns.heatmap(normalized_matrix, 
+                annot=True, 
+                fmt='.1f', 
+                cmap='YlOrRd',
+                xticklabels=[f'C{int(c)}' for c in clusters],
+                yticklabels=portals,
+                cbar_kws={'label': 'Percentage of portal characters'},
+                linewidths=0.5,
+                vmin=0,
+                vmax=100)
+    plt.xlabel('Semantic Clusters', fontsize=12, fontweight='bold')
+    plt.ylabel('Portals (Factions)', fontsize=12, fontweight='bold')
+    plt.title('Portal vs Semantic Cluster Comparison (Normalized)\n(% of each faction in each semantic cluster)', 
+              fontsize=14, fontweight='bold', pad=20)
+    plt.xticks(rotation=0)
+    plt.yticks(rotation=0)
+    plt.tight_layout()
+    
+    output_path_norm = Path("images/portal_cluster_confusion_matrix_normalized.png")
+    output_path_norm.parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(output_path_norm, dpi=300, bbox_inches='tight')
     plt.close()
     
     # calculate alignment metrics
@@ -114,7 +148,9 @@ def create_portal_cluster_comparison(df, G):
     print("\nPortal Alignment:")
     print(alignment_df.to_string(index=False))
     
-    return pd.DataFrame(confusion_matrix, index=portals, columns=[f'Cluster {int(c)}' for c in clusters]), portal_stats_df, None
+    confusion_df = pd.DataFrame(confusion_matrix, index=portals, columns=[f'Cluster {int(c)}' for c in clusters])
+    normalized_df = pd.DataFrame(normalized_matrix, index=portals, columns=[f'Cluster {int(c)}' for c in clusters])
+    return confusion_df, portal_stats_df, normalized_df
 
 def main():
     G = load_network_with_portals()
