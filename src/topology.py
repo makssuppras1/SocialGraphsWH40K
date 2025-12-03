@@ -1,7 +1,7 @@
 import json
 import pickle
 import networkx as nx
-import community.community_louvain as community_louvain
+#import community.community_louvain as community_louvain
 import pandas as pd
 from pathlib import Path
 
@@ -45,7 +45,7 @@ def compute_topology_metrics(G):
     
     # community detection (louvain) - needs undirected graph
     G_undirected = G.to_undirected()
-    partition = community_louvain.best_partition(G_undirected)
+    partition = nx.community.louvain_communities(G_undirected)
     
     nodes = list(G.nodes())
     return pd.DataFrame({
