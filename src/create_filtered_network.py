@@ -68,6 +68,22 @@ def prepare_graph_for_export(G):
 
 
 def save_filtered_network(G_filtered):
+    # Compute Louvain communities and add community_id to nodes
+    print("Computing Louvain communities...")
+    partition = nx.community.louvain_communities(G_filtered)
+    
+    # Convert partition (list of sets) to node->community_id mapping
+    node_to_community = {}
+    for comm_id, community in enumerate(partition):
+        for node in community:
+            node_to_community[node] = comm_id
+    
+    # Add community_id as node attribute
+    for node in G_filtered.nodes():
+        G_filtered.nodes[node]['community_id'] = node_to_community.get(node, -1)
+    
+    print(f"Found {len(partition)} communities")
+    
     G_export = prepare_graph_for_export(G_filtered)
     
     try:
