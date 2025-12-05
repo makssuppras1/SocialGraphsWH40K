@@ -12,8 +12,60 @@ from sklearn.metrics import pairwise_distances, silhouette_score
 from joblib import Parallel, delayed
 import multiprocessing
 
-def clean_wikitext(text):
+def get_all_character_names(valid_nodes=None):
+    # Get all character names from the network for name removal
+    # Returns a set of character names (titles and display names) to remove from text
+    character_names = set()
+    
+    # Try to load from network first
+    try:
+        from config import PICKLE_FILTERED_FILE
+        filter_path = Path(PICKLE_FILTERED_FILE)
+    except ImportError:
+        filter_path = Path(__file__).parent.parent / "data" / "lexicanum_network_filtered.pkl"
+    
+    if not filter_path.exists():
+        filter_path = Path(__file__).parent.parent / "data" / "lexicanum_network_filtered.pkl"
+    
+    if filter_path.exists():
+        with open(filter_path, 'rb') as f:
+            G = pickle.load(f)
+        
+        for node in G.nodes():
+            if valid_nodes is None or node in valid_nodes:
+                # Add the full title
+                character_names.add(node.lower())
+                # Add display name (title without parenthetical info)
+                display_name = re.sub(r'\s*\([^)]*\)$', '', node).strip()
+                character_names.add(display_name.lower())
+                # Add individual words from multi-word names (e.g., "Roboute Guilliman" -> "roboute", "guilliman")
+                words = display_name.split()
+                for word in words:
+                    # Only add words that are likely names (capitalized, >2 chars)
+                    if len(word) > 2:
+                        character_names.add(word.lower())
+    else:
+        # Fallback: try to load from characters JSON file
+        chars_path = Path(__file__).parent.parent / "data" / "lexicanum_characters.json"
+        if chars_path.exists():
+            with open(chars_path, 'r', encoding='utf-8') as f:
+                characters = json.load(f)
+            for char in characters:
+                title = char.get('title', '')
+                name = char.get('name', '')
+                if valid_nodes is None or title in valid_nodes:
+                    character_names.add(title.lower())
+                    character_names.add(name.lower())
+                    # Add individual words
+                    for word in name.split():
+                        if len(word) > 2:
+                            character_names.add(word.lower())
+    
+    return character_names
+
+def clean_wikitext(text, character_names_to_remove=None):
     # cleans wikitext markup to get plain text
+    # character_names_to_remove: set of character names (lowercase) to remove from text
     if not text:
         return ""
     
@@ -30,11 +82,51 @@ def clean_wikitext(text):
     text = re.sub(r"'''?", '', text) #remove bold formatting
     text = re.sub(r'<[^>]+>', '', text) #remove HTML tags
     text = re.sub(r'\s+', ' ', text).strip() #remove extra whitespace
+    
+    # Remove character names if provided
+    if character_names_to_remove:
+        text_lower = text.lower()
+        # Sort names by length (longest first) to avoid partial matches
+        sorted_names = sorted(character_names_to_remove, key=len, reverse=True)
+        for name in sorted_names:
+            # Use word boundaries to avoid removing parts of words
+            # Pattern: word boundary, name, word boundary (case insensitive)
+            pattern = r'\b' + re.escape(name) + r'\b'
+            text = re.sub(pattern, '', text, flags=re.IGNORECASE)
+        # Clean up extra spaces after removal
+        text = re.sub(r'\s+', ' ', text).strip()
+    
     return text.lower()
 
-def load_character_descriptions(raw_data_path='raw_data', batch_pattern='lexicanum_page_texts_batch_*.json', valid_nodes=None):
+def load_character_descriptions(raw_data_path='raw_data', batch_pattern='lexicanum_page_texts_batch_*.json', valid_nodes=None, remove_names=True, cache_file=None):
     # loads and cleans descriptions from raw batch files
     # if valid_nodes is provided (set of node IDs), only includes characters in that set
+    # remove_names: if True, removes character names from text to focus on context/themes
+    # cache_file: path to cache file to save/load processed descriptions (saves time on subsequent runs)
+    
+    # Check for cached version first
+    if cache_file is None:
+        cache_file = Path(__file__).parent.parent / "data" / "character_descriptions_processed.json"
+    else:
+        cache_file = Path(cache_file)
+    
+    # If cache exists and we want to use it, load from cache
+    if cache_file.exists() and remove_names:
+        try:
+            print(f"  Loading cached processed descriptions from {cache_file.name}...", flush=True)
+            with open(cache_file, 'r', encoding='utf-8') as f:
+                cached_data = json.load(f)
+            # Filter by valid_nodes if provided
+            if valid_nodes is not None:
+                descriptions = {k: v for k, v in cached_data.items() if k in valid_nodes}
+            else:
+                descriptions = cached_data
+            print(f"  Loaded {len(descriptions)} cached descriptions", flush=True)
+            return descriptions
+        except Exception as e:
+            print(f"  Cache load failed ({e}), processing from scratch...", flush=True)
+    
+    # Process from scratch
     descriptions = {}
     path = Path(raw_data_path)
     if not path.exists():
@@ -71,7 +163,19 @@ def load_character_descriptions(raw_data_path='raw_data', batch_pattern='lexican
             print(f"Warning: Could not load filtered network ({e}). Loading all descriptions.")
             valid_nodes = None
 
-    for file_path in files:
+    # Get all character names to remove (if requested)
+    character_names_to_remove = None
+    if remove_names:
+        print("  Loading character names for removal from text...", flush=True)
+        sys.stdout.flush()
+        character_names_to_remove = get_all_character_names(valid_nodes)
+        print(f"  Found {len(character_names_to_remove)} character name variations to remove", flush=True)
+        print("  Removing names from text descriptions (this may take a moment)...", flush=True)
+        sys.stdout.flush()
+
+    total_files = len(files)
+    processed = 0
+    for file_idx, file_path in enumerate(files):
         with open(file_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
             for title, page_data in data.get('pages', {}).items():
@@ -80,15 +184,34 @@ def load_character_descriptions(raw_data_path='raw_data', batch_pattern='lexican
                     continue
                     
                 wikitext = page_data.get('wikitext', '')
-                clean_text = clean_wikitext(wikitext)
+                clean_text = clean_wikitext(wikitext, character_names_to_remove)
                 if len(clean_text) > 20:
                     descriptions[title] = clean_text
+                    processed += 1
+                    # Show progress every 500 characters
+                    if processed % 500 == 0:
+                        print(f"  Processed {processed} characters...", end='\r', flush=True)
+    
+    print(f"  Processed {processed} characters total", flush=True)
+    
+    # Save to cache if we processed with name removal
+    if remove_names and descriptions:
+        try:
+            print(f"  Saving processed descriptions to cache ({cache_file.name})...", flush=True)
+            cache_file.parent.mkdir(parents=True, exist_ok=True)
+            with open(cache_file, 'w', encoding='utf-8') as f:
+                json.dump(descriptions, f, indent=2, ensure_ascii=False)
+            print(f"  Cache saved successfully", flush=True)
+        except Exception as e:
+            print(f"  Warning: Could not save cache ({e})", flush=True)
+    
     return descriptions
 
 def generate_embeddings(texts, model_name='all-MiniLM-L6-v2', batch_size=32):
     # generates embeddings for a list of text strings
+    # Shows progress bar to estimate time remaining
     model = SentenceTransformer(model_name)
-    return model.encode(texts, batch_size=batch_size, show_progress_bar=False)
+    return model.encode(texts, batch_size=batch_size, show_progress_bar=True)
 
 def cluster_embeddings(embeddings, n_clusters=20):
     # clusters embeddings using k-means
