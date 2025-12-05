@@ -56,12 +56,25 @@ def compute_topology_metrics(G):
             node_to_community[node] = comm_id
     
     nodes = list(G.nodes())
+    
+    # collect all metric values
+    betweenness_values = []
+    pagerank_values = []
+    clustering_values = []
+    community_ids = []
+    
+    for n in nodes:
+        betweenness_values.append(betweenness.get(n, 0))
+        pagerank_values.append(pagerank.get(n, 0))
+        clustering_values.append(clustering.get(n, 0))
+        community_ids.append(node_to_community.get(n, -1))
+    
     return pd.DataFrame({
         'node_id': nodes,
-        'betweenness': [betweenness.get(n, 0) for n in nodes],
-        'pagerank': [pagerank.get(n, 0) for n in nodes],
-        'clustering_coefficient': [clustering.get(n, 0) for n in nodes],
-        'network_community_id': [node_to_community.get(n, -1) for n in nodes]
+        'betweenness': betweenness_values,
+        'pagerank': pagerank_values,
+        'clustering_coefficient': clustering_values,
+        'network_community_id': community_ids
     })
 
 if __name__ == "__main__":

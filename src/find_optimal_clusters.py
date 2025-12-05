@@ -92,18 +92,32 @@ def main():
     print()
     
     for cluster_id in sorted(keywords.keys()):
-        cluster_size = sum(optimal_labels == cluster_id)
+        # count how many characters are in this cluster
+        cluster_size = 0
+        for label in optimal_labels:
+            if label == cluster_id:
+                cluster_size += 1
         print(f"Cluster {cluster_id} ({cluster_size} characters):")
         print(f"Keywords: {keywords[cluster_id]}")
         print()
     
     print("Cluster examples:")
-    for cluster_id in sorted(set(optimal_labels)):
-        cluster_indices = [i for i, label in enumerate(optimal_labels) if label == cluster_id]
-        example_names = [character_names[i] for i in cluster_indices[:5]]
+    unique_clusters = sorted(set(optimal_labels))
+    for cluster_id in unique_clusters:
+        # find all indices for this cluster
+        cluster_indices = []
+        for i, label in enumerate(optimal_labels):
+            if label == cluster_id:
+                cluster_indices.append(i)
+        
+        # get first 5 example names
+        example_names = []
+        for i in cluster_indices[:5]:
+            example_names.append(character_names[i])
         print(f"Cluster {cluster_id}: {', '.join(example_names)}")
         if len(cluster_indices) > 5:
-            print(f"  ... and {len(cluster_indices) - 5} more")
+            remaining = len(cluster_indices) - 5
+            print(f"  ... and {remaining} more")
         print()
     
     # Save results to JSON files
@@ -155,9 +169,18 @@ def main():
         'clusters': {}
     }
     
-    for cluster_id in sorted(set(optimal_labels)):
-        cluster_indices = [i for i, label in enumerate(optimal_labels) if label == cluster_id]
-        cluster_characters = [character_names[i] for i in cluster_indices]
+    unique_clusters = sorted(set(optimal_labels))
+    for cluster_id in unique_clusters:
+        # find all indices for this cluster
+        cluster_indices = []
+        for i, label in enumerate(optimal_labels):
+            if label == cluster_id:
+                cluster_indices.append(i)
+        
+        # get character names for this cluster
+        cluster_characters = []
+        for i in cluster_indices:
+            cluster_characters.append(character_names[i])
         
         cluster_summaries['clusters'][int(cluster_id)] = {
             'size': len(cluster_characters),

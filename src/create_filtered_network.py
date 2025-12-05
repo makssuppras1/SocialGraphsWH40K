@@ -29,7 +29,10 @@ def filter_network(G):
     
     # remove nodes with degree < 2 iteratively
     while True:
-        nodes_to_remove = [n for n in G_filtered.nodes() if G_filtered.degree(n) < 2]
+        nodes_to_remove = []
+        for n in G_filtered.nodes():
+            if G_filtered.degree(n) < 2:
+                nodes_to_remove.append(n)
         if not nodes_to_remove:
             break
         G_filtered.remove_nodes_from(nodes_to_remove)
@@ -44,7 +47,11 @@ def prepare_graph_for_export(G):
     for node in G_export.nodes():
         node_data = G_export.nodes[node]
         if 'all_affiliations' in node_data and isinstance(node_data['all_affiliations'], list):
-            node_data['all_affiliations'] = ', '.join(str(x) for x in node_data['all_affiliations'] if x is not None)
+            affiliation_parts = []
+            for x in node_data['all_affiliations']:
+                if x is not None:
+                    affiliation_parts.append(str(x))
+            node_data['all_affiliations'] = ', '.join(affiliation_parts)
         elif 'all_affiliations' in node_data and node_data['all_affiliations'] is None:
             node_data['all_affiliations'] = ''
         

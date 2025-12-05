@@ -139,7 +139,10 @@ def load_character_descriptions(raw_data_path='raw_data', batch_pattern='lexican
                 cached_data = json.load(f)
             # Filter by valid_nodes if provided
             if valid_nodes is not None:
-                descriptions = {k: v for k, v in cached_data.items() if k in valid_nodes}
+                descriptions = {}
+                for k, v in cached_data.items():
+                    if k in valid_nodes:
+                        descriptions[k] = v
             else:
                 descriptions = cached_data
             print(f"  Loaded {len(descriptions)} processed descriptions from data file", flush=True)
@@ -238,7 +241,10 @@ def extract_cluster_keywords(texts, cluster_ids, n_keywords=5):
             keywords[cluster_id] = ", ".join(feature_names[top_indices])
     except ValueError:
         unique_clusters = set(cluster_ids)
-        return {c: "error" for c in unique_clusters}
+        keywords = {}
+        for c in unique_clusters:
+            keywords[c] = "error"
+        return keywords
         
     return keywords
 
@@ -392,7 +398,9 @@ if __name__ == "__main__":
     if descs:
         # Use a subset for testing (remove [:50] to use all data)
         test_titles = list(descs.keys())[:100]  # Using 100 for faster testing
-        test_texts = [descs[t] for t in test_titles]
+        test_texts = []
+        for t in test_titles:
+            test_texts.append(descs[t])
         
         print(f"Generating embeddings for {len(test_texts)} characters...")
         embs = generate_embeddings(test_texts)

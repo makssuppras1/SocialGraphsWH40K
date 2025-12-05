@@ -74,10 +74,6 @@ def show_statistics(df):
           f"Min: {df['neighbor_consistency'].min():.4f}, Max: {df['neighbor_consistency'].max():.4f}")
     print(f"Semantic clusters: {df['semantic_cluster_id'].nunique()}")
 
-def mythological_vs_narrative_network(df):
-    nx.write
-    
-
 def main():
     df = load_results()
     show_statistics(df)

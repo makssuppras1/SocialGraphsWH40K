@@ -26,14 +26,27 @@ def get_portal_from_node(G, node_id):
     node_data = G.nodes.get(node_id, {})
     portals = node_data.get('portals', '')
     if portals:
-        portal_list = [p.strip() for p in str(portals).split(',') if p.strip()]
+        portals_str = str(portals)
+        portal_parts = portals_str.split(',')
+        portal_list = []
+        for p in portal_parts:
+            p_clean = p.strip()
+            if p_clean:
+                portal_list.append(p_clean)
         if portal_list:
             return portal_list[0]
     return None
 
 def create_portal_cluster_comparison(df, G):
     # creates comparison between portals and semantic clusters
-    df['portal'] = df['node_id'].apply(lambda x: get_portal_from_node(G, x))
+    # add portal column to dataframe
+    portal_list = []
+    for node_id in df['node_id']:
+        portal = get_portal_from_node(G, node_id)
+        portal_list.append(portal)
+    df['portal'] = portal_list
+    
+    # keep only rows with both portal and cluster
     valid_df = df.dropna(subset=['portal', 'semantic_cluster_id']).copy()
     
     portals = sorted(valid_df['portal'].unique())
@@ -70,21 +83,30 @@ def create_portal_cluster_comparison(df, G):
     portal_stats_df = pd.DataFrame(portal_stats)
     
     # Create normalized matrix (row-normalized: percentage of each portal in each cluster)
-    normalized_matrix = np.zeros_like(confusion_matrix, dtype=float)
-    for i in range(len(portals)):
+    num_portals = len(portals)
+    num_clusters = len(clusters)
+    normalized_matrix = np.zeros((num_portals, num_clusters), dtype=float)
+    for i in range(num_portals):
         row_sum = confusion_matrix[i, :].sum()
         if row_sum > 0:
-            normalized_matrix[i, :] = (confusion_matrix[i, :] / row_sum) * 100
+            for j in range(num_clusters):
+                normalized_matrix[i, j] = (confusion_matrix[i, j] / row_sum) * 100
         else:
-            normalized_matrix[i, :] = 0
+            for j in range(num_clusters):
+                normalized_matrix[i, j] = 0
     
     # visualize raw count confusion matrix
+    # create cluster labels
+    cluster_labels = []
+    for c in clusters:
+        cluster_labels.append(f'C{int(c)}')
+    
     plt.figure(figsize=(14, 10))
     sns.heatmap(confusion_matrix, 
                 annot=True, 
                 fmt='.0f', 
                 cmap='YlOrRd',
-                xticklabels=[f'C{int(c)}' for c in clusters],
+                xticklabels=cluster_labels,
                 yticklabels=portals,
                 cbar_kws={'label': 'Number of characters'},
                 linewidths=0.5)
@@ -107,7 +129,7 @@ def create_portal_cluster_comparison(df, G):
                 annot=True, 
                 fmt='.1f', 
                 cmap='YlOrRd',
-                xticklabels=[f'C{int(c)}' for c in clusters],
+                xticklabels=cluster_labels,
                 yticklabels=portals,
                 cbar_kws={'label': 'Percentage of portal characters'},
                 linewidths=0.5,
@@ -140,7 +162,14 @@ def create_portal_cluster_comparison(df, G):
             })
     
     alignment_df = pd.DataFrame(portal_alignment)
-    alignment_df = alignment_df.sort_values('Alignment %', key=lambda x: x.str.rstrip('%').astype(float), ascending=False)
+    # sort by alignment percentage (convert string to float)
+    alignment_values = []
+    for val in alignment_df['Alignment %']:
+        val_clean = val.rstrip('%')
+        alignment_values.append(float(val_clean))
+    alignment_df['_sort_key'] = alignment_values
+    alignment_df = alignment_df.sort_values('_sort_key', ascending=False)
+    alignment_df = alignment_df.drop('_sort_key', axis=1)
     
     print(f"Nodes with both portal and cluster: {len(valid_df)}")
     print("\nPortal Statistics:")
@@ -148,8 +177,13 @@ def create_portal_cluster_comparison(df, G):
     print("\nPortal Alignment:")
     print(alignment_df.to_string(index=False))
     
-    confusion_df = pd.DataFrame(confusion_matrix, index=portals, columns=[f'Cluster {int(c)}' for c in clusters])
-    normalized_df = pd.DataFrame(normalized_matrix, index=portals, columns=[f'Cluster {int(c)}' for c in clusters])
+    # create column labels for dataframes
+    cluster_col_labels = []
+    for c in clusters:
+        cluster_col_labels.append(f'Cluster {int(c)}')
+    
+    confusion_df = pd.DataFrame(confusion_matrix, index=portals, columns=cluster_col_labels)
+    normalized_df = pd.DataFrame(normalized_matrix, index=portals, columns=cluster_col_labels)
     return confusion_df, portal_stats_df, normalized_df
 
 def main():

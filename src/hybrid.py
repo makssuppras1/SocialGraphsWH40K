@@ -20,7 +20,10 @@ def calculate_neighbor_consistency(G, embeddings, node_to_idx):
             consistency_scores[node] = np.nan
             continue
             
-        neighbor_indices = [node_to_idx[n] for n in neighbors if n in node_to_idx]
+        neighbor_indices = []
+        for n in neighbors:
+            if n in node_to_idx:
+                neighbor_indices.append(node_to_idx[n])
         
         if not neighbor_indices:
             consistency_scores[node] = np.nan

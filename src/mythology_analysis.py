@@ -24,13 +24,18 @@ def main():
     descriptions = load_character_descriptions(valid_nodes=graph_nodes)
     
     # Get intersection (in case some network nodes don't have descriptions)
-    valid_nodes = [n for n in descriptions.keys() if n in graph_nodes]
+    valid_nodes = []
+    for n in descriptions.keys():
+        if n in graph_nodes:
+            valid_nodes.append(n)
     
     if not valid_nodes:
         print("Error: No intersection between graph nodes and text descriptions.")
         return
     
-    valid_texts = [descriptions[n] for n in valid_nodes]
+    valid_texts = []
+    for n in valid_nodes:
+        valid_texts.append(descriptions[n])
     embeddings = generate_embeddings(valid_texts)
     cluster_ids = cluster_embeddings(embeddings, n_clusters=16)
     keywords = extract_cluster_keywords(valid_texts, cluster_ids)
@@ -45,7 +50,9 @@ def main():
     combined_df = pd.merge(topology_df, semantics_df, on='node_id', how='left')
     
     # phase 3: hybrid analysis
-    node_to_emb_idx = {n: i for i, n in enumerate(valid_nodes)}
+    node_to_emb_idx = {}
+    for i, n in enumerate(valid_nodes):
+        node_to_emb_idx[n] = i
     consistency_scores = calculate_neighbor_consistency(G, embeddings, node_to_emb_idx)
     combined_df['neighbor_consistency'] = combined_df['node_id'].map(consistency_scores)
     calculate_correlations(combined_df)

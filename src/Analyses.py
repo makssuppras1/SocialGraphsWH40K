@@ -31,16 +31,23 @@ def load_network(use_filtered=True):
 
 def analyze_degree_distribution(network):
     # looks at how many connections each node has and makes plots
-    degrees = [network.degree(node) for node in network.nodes()]
+    # collect all node degrees
+    degrees = []
+    for node in network.nodes():
+        node_degree = network.degree(node)
+        degrees.append(node_degree)
     
+    # create figure with two plots side by side
     fig, axes = plt.subplots(1, 2, figsize=(15, 5))
     
+    # first plot: regular histogram
     axes[0].hist(degrees, bins=50, alpha=0.7, edgecolor='black')
     axes[0].set_xlabel('Degree')
     axes[0].set_ylabel('Frequency')
     axes[0].set_title('Degree Distribution')
     axes[0].grid(True, alpha=0.3)
     
+    # second plot: log-log scale
     unique_degrees, counts = np.unique(degrees, return_counts=True)
     axes[1].loglog(unique_degrees, counts, 'o', markersize=6)
     axes[1].set_xlabel('Degree (log scale)')
@@ -49,7 +56,8 @@ def analyze_degree_distribution(network):
     axes[1].grid(True, alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig(IMAGES_PATH / "degree_distribution.png", dpi=300, bbox_inches='tight')
+    output_file = IMAGES_PATH / "degree_distribution.png"
+    plt.savefig(output_file, dpi=300, bbox_inches='tight')
     plt.close()
 
 
@@ -60,20 +68,32 @@ def analyze_centrality(network, network_directed=None):
         if not isinstance(network_directed, nx.DiGraph):
             network_directed = network.to_directed()
     
+    # calculate three types of centrality
     centrality_degree = nx.degree_centrality(network)
     centrality_betweenness = nx.betweenness_centrality(network)
     
+    # try eigenvector centrality, convert to undirected if it fails
     try:
         centrality_eigenvector = nx.eigenvector_centrality(network, max_iter=1000)
     except nx.PowerIterationFailedConvergence:
-        network_undir = network.to_undirected() if isinstance(network, nx.DiGraph) else network
+        if isinstance(network, nx.DiGraph):
+            network_undir = network.to_undirected()
+        else:
+            network_undir = network
         centrality_eigenvector = nx.eigenvector_centrality(network_undir, max_iter=1000)
     
+    # collect all values for each node
     nodes = list(network.nodes())
-    degree_values = [centrality_degree[n] for n in nodes]
-    betweenness_values = [centrality_betweenness[n] for n in nodes]
-    eigenvector_values = [centrality_eigenvector[n] for n in nodes]
+    degree_values = []
+    betweenness_values = []
+    eigenvector_values = []
     
+    for n in nodes:
+        degree_values.append(centrality_degree[n])
+        betweenness_values.append(centrality_betweenness[n])
+        eigenvector_values.append(centrality_eigenvector[n])
+    
+    # calculate correlations between measures
     corr_deg_bet, _ = pearsonr(degree_values, betweenness_values)
     corr_deg_eig, _ = pearsonr(degree_values, eigenvector_values)
     corr_bet_eig, _ = pearsonr(betweenness_values, eigenvector_values)
@@ -101,10 +121,18 @@ def analyze_assortativity(network):
     # checks if high degree nodes connect to other high degree nodes
     assortativity = nx.degree_assortativity_coefficient(network)
     
-    node_degrees = [network.degree(n) for n in network.nodes()]
-    avg_neighbor_degrees = nx.average_neighbor_degree(network)
-    neighbor_degrees = [avg_neighbor_degrees[n] for n in network.nodes()]
+    # collect node degrees
+    node_degrees = []
+    for n in network.nodes():
+        node_degrees.append(network.degree(n))
     
+    # get average neighbor degrees for each node
+    avg_neighbor_degrees = nx.average_neighbor_degree(network)
+    neighbor_degrees = []
+    for n in network.nodes():
+        neighbor_degrees.append(avg_neighbor_degrees[n])
+    
+    # create scatter plot
     plt.figure(figsize=(10, 6))
     plt.scatter(node_degrees, neighbor_degrees, alpha=0.5, s=30)
     plt.xlabel('Node Degree')
@@ -112,12 +140,16 @@ def analyze_assortativity(network):
     plt.title(f'Degree Assortativity (r = {assortativity:.3f})')
     plt.grid(True, alpha=0.3)
     
+    # add trend line
     coefficients = np.polyfit(node_degrees, neighbor_degrees, 1)
     trendline = np.poly1d(coefficients)
-    plt.plot(sorted(node_degrees), trendline(sorted(node_degrees)), "r--", alpha=0.8, linewidth=2)
+    sorted_degrees = sorted(node_degrees)
+    trend_y = trendline(sorted_degrees)
+    plt.plot(sorted_degrees, trend_y, "r--", alpha=0.8, linewidth=2)
     
     plt.tight_layout()
-    plt.savefig(IMAGES_PATH / "assortativity.png", dpi=300, bbox_inches='tight')
+    output_file = IMAGES_PATH / "assortativity.png"
+    plt.savefig(output_file, dpi=300, bbox_inches='tight')
     plt.close()
 
 
@@ -141,15 +173,28 @@ def extract_backbone(network, threshold=0.05):
     network_weighted = network.copy()
     nx.set_edge_attributes(network_weighted, edge_weights, 'weight')
     
+    # find edges to remove based on threshold
     edges_to_remove = []
     for node in network_weighted.nodes():
         node_edges = list(network_weighted.edges(node))
         if len(node_edges) > 1:
-            weights = [network_weighted[edge[0]][edge[1]]['weight'] for edge in node_edges]
+            # get weights for all edges from this node
+            weights = []
+            for edge in node_edges:
+                source = edge[0]
+                target = edge[1]
+                edge_weight = network_weighted[source][target]['weight']
+                weights.append(edge_weight)
+            
             total_weight = sum(weights)
             
+            # check each edge and mark weak ones for removal
             for i, edge in enumerate(node_edges):
-                relative_weight = weights[i] / total_weight if total_weight > 0 else 0
+                if total_weight > 0:
+                    relative_weight = weights[i] / total_weight
+                else:
+                    relative_weight = 0
+                
                 if relative_weight < threshold:
                     edges_to_remove.append(edge)
     
@@ -166,13 +211,24 @@ def extract_backbone(network, threshold=0.05):
         if backbone_viz.number_of_nodes() <= 500:
             try:
                 pos = nx.spring_layout(backbone_viz, k=1, iterations=50, seed=42)
-                degrees = [backbone_viz.degree(n) for n in backbone_viz.nodes()]
+                # calculate node sizes based on degree
+                degrees = []
+                for n in backbone_viz.nodes():
+                    degrees.append(backbone_viz.degree(n))
                 
                 if degrees:
-                    min_degree, max_degree = min(degrees), max(degrees)
-                    node_sizes = [20 + 180 * (d - min_degree) / (max_degree - min_degree) if max_degree > min_degree else 20 for d in degrees]
+                    min_degree = min(degrees)
+                    max_degree = max(degrees)
+                    node_sizes = []
+                    for d in degrees:
+                        if max_degree > min_degree:
+                            size = 20 + 180 * (d - min_degree) / (max_degree - min_degree)
+                        else:
+                            size = 20
+                        node_sizes.append(size)
                 else:
-                    node_sizes = [20] * len(backbone_viz.nodes())
+                    num_nodes = len(backbone_viz.nodes())
+                    node_sizes = [20] * num_nodes
                 
                 plt.figure(figsize=(14, 12))
                 nx.draw_networkx_nodes(backbone_viz, pos, node_size=node_sizes, node_color='steelblue', 
@@ -196,6 +252,7 @@ def calculate_modularity(graph, groups):
     if total_edges == 0:
         return 0.0
     
+    # organize nodes into communities
     communities = defaultdict(set)
     for node, group in groups.items():
         if node in graph:
@@ -203,10 +260,23 @@ def calculate_modularity(graph, groups):
     
     modularity = 0.0
     for group_name, group_nodes in communities.items():
-        edges_in_group = sum(1 for node1 in group_nodes for node2 in group_nodes 
-                            if node1 < node2 and graph.has_edge(node1, node2))
-        total_degree = sum(graph.degree(node) for node in group_nodes if node in graph)
-        modularity += (edges_in_group / total_edges) - (total_degree / (2 * total_edges))**2
+        # count edges within this group
+        edges_in_group = 0
+        for node1 in group_nodes:
+            for node2 in group_nodes:
+                if node1 < node2 and graph.has_edge(node1, node2):
+                    edges_in_group += 1
+        
+        # calculate total degree of nodes in this group
+        total_degree = 0
+        for node in group_nodes:
+            if node in graph:
+                total_degree += graph.degree(node)
+        
+        # add to modularity score
+        part1 = edges_in_group / total_edges
+        part2 = (total_degree / (2 * total_edges)) ** 2
+        modularity += part1 - part2
     
     return modularity
 
@@ -236,10 +306,18 @@ def analyze_communities(network):
         
         all_factions = sorted(list(MAIN_PORTALS))
         num_communities = min(16, len(detected_communities))
-        sorted_indices = sorted(range(len(detected_communities)), 
-                                key=lambda i: len(detected_communities[i]), 
-                                reverse=True)
-        top_communities = sorted_indices[:num_communities]
+        
+        # sort communities by size (largest first)
+        community_sizes = []
+        for i in range(len(detected_communities)):
+            size = len(detected_communities[i])
+            community_sizes.append((i, size))
+        community_sizes.sort(key=lambda x: x[1], reverse=True)
+        
+        # get top communities
+        top_communities = []
+        for i in range(num_communities):
+            top_communities.append(community_sizes[i][0])
         
         confusion_matrix = np.zeros((len(all_factions), len(top_communities)))
         for node in network.nodes():
@@ -278,8 +356,17 @@ def analyze_communities(network):
                 largest_component = max(components, key=len)
                 network_viz = network.subgraph(largest_component).copy()
                 pos = nx.spring_layout(network_viz, k=1, iterations=50, seed=42)
-                colors = plt.cm.tab20(np.linspace(0, 1, len(detected_communities)))
-                node_colors = [colors[node_to_community.get(node, 0) % len(colors)] for node in network_viz.nodes()]
+                # assign colors to communities
+                num_colors = len(detected_communities)
+                color_values = np.linspace(0, 1, num_colors)
+                colors = plt.cm.tab20(color_values)
+                
+                # assign color to each node based on its community
+                node_colors = []
+                for node in network_viz.nodes():
+                    comm_id = node_to_community.get(node, 0)
+                    color_index = comm_id % len(colors)
+                    node_colors.append(colors[color_index])
                 
                 plt.figure(figsize=(14, 12))
                 nx.draw_networkx_nodes(network_viz, pos, node_color=node_colors, node_size=30,
