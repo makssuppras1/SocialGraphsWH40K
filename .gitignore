@@ -37,3 +37,6 @@ Thumbs.db
 *.tmp
 *.log
 
+# Cursor rules (personal preferences)
+.cursorrules
+

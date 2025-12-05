@@ -8,6 +8,9 @@ from pathlib import Path
 from sentence_transformers import SentenceTransformer
 from sklearn.cluster import KMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics import pairwise_distances, silhouette_score
+from joblib import Parallel, delayed
+import multiprocessing
 
 def clean_wikitext(text):
     # cleans wikitext markup to get plain text
@@ -120,11 +123,158 @@ def extract_cluster_keywords(texts, cluster_ids, n_keywords=5):
         
     return keywords
 
+def _test_single_k(embeddings, k, random_state=42, inner_n_jobs=2):
+    # Helper function to test a single k value (for parallelization)
+    # inner_n_jobs: cores to use for silhouette calculation (K-Means handles its own threading)
+    # Run K-Means clustering with k clusters
+    # Note: K-Means doesn't support n_jobs parameter in this scikit-learn version
+    kmeans = KMeans(n_clusters=k, random_state=random_state, n_init=10)
+    labels = kmeans.fit_predict(embeddings)
+    
+    # Calculate silhouette score (balances cohesion and separation)
+    # Silhouette is the most expensive operation, so parallelization helps here
+    silhouette = silhouette_score(embeddings, labels, n_jobs=inner_n_jobs)
+    
+    # Calculate average within-cluster distance for reference
+    # This is less critical, so we can use fewer cores or sequential
+    total_within_distance = 0
+    total_pairs = 0
+    
+    for cluster_id in range(k):
+        cluster_points = embeddings[labels == cluster_id]
+        if len(cluster_points) > 1:
+            # For small clusters, sequential is often faster due to overhead
+            distances = pairwise_distances(cluster_points, n_jobs=1)
+            n_points = len(distances)
+            for i in range(n_points):
+                for j in range(i + 1, n_points):
+                    total_within_distance += distances[i, j]
+                    total_pairs += 1
+    
+    avg_within_distance = total_within_distance / total_pairs if total_pairs > 0 else float('inf')
+    
+    return {
+        'k': k,
+        'silhouette_score': silhouette,
+        'avg_within_cluster_distance': avg_within_distance
+    }
+
+def find_optimal_semantic_clusters(embeddings, k_range=(2, 40), n_jobs=None):
+    # Find the optimal number of semantic clusters using silhouette score
+    # Silhouette score balances cohesion (within-cluster similarity) and separation (between-cluster distance)
+    # Range: -1 to 1, where higher is better (1 = perfect separation, -1 = wrong clustering)
+    # n_jobs: number of parallel jobs for outer loop (None = auto-balance)
+    # Returns: (results_df, optimal_k, optimal_labels)
+    
+    total_cores = multiprocessing.cpu_count()
+    
+    # Balanced approach: use ~60-70% of cores for outer loop, rest for inner operations
+    # This prevents over-subscription and contention
+    if n_jobs is None:
+        # For 11 cores: use 6-7 for outer loop, 2-3 for each inner operation
+        outer_jobs = max(4, int(total_cores * 0.6))  # At least 4, but not all cores
+        inner_jobs = max(2, total_cores - outer_jobs)  # Remaining cores for inner ops
+    else:
+        outer_jobs = n_jobs
+        inner_jobs = max(2, total_cores - outer_jobs)
+    
+    print(f"Finding optimal number of clusters (testing k from {k_range[0]} to {k_range[1]})...")
+    print(f"Parallelization: {outer_jobs} cores for testing different k values, {inner_jobs} cores per k for K-Means/silhouette")
+    
+    # Make sure we don't test more clusters than we have data points
+    max_k = min(k_range[1], len(embeddings))
+    min_k = k_range[0]
+    
+    # Parallelize the k testing loop - test multiple k values simultaneously
+    # Each k test will use inner_jobs cores internally
+    print("Testing all k values in parallel...")
+    results = Parallel(n_jobs=outer_jobs, verbose=1)(
+        delayed(_test_single_k)(embeddings, k, inner_n_jobs=inner_jobs) 
+        for k in range(min_k, max_k + 1)
+    )
+    
+    # Convert to DataFrame for easy analysis
+    results_df = pd.DataFrame(results)
+    
+    # Find the k with highest silhouette score (best balance of cohesion and separation)
+    optimal_k = results_df.loc[results_df['silhouette_score'].idxmax(), 'k']
+    
+    print(f"\nOptimal number of clusters: k={optimal_k}")
+    print(f"  Silhouette score: {results_df.loc[results_df['k']==optimal_k, 'silhouette_score'].values[0]:.4f}")
+    print(f"  Average within-cluster distance: {results_df.loc[results_df['k']==optimal_k, 'avg_within_cluster_distance'].values[0]:.4f}")
+    
+    # Get the final clustering with optimal k
+    final_kmeans = KMeans(n_clusters=int(optimal_k), random_state=42, n_init=10)
+    optimal_labels = final_kmeans.fit_predict(embeddings)
+    
+    return results_df, int(optimal_k), optimal_labels
+
+def plot_cohesion_analysis(results_df, optimal_k, save_path=None):
+    # Simple visualization of the clustering analysis
+    # results_df: DataFrame returned from find_optimal_semantic_clusters
+    # optimal_k: the optimal k value found
+    # save_path: optional path to save the plot (e.g., 'images/cohesion_analysis.png')
+    try:
+        import matplotlib.pyplot as plt
+    except ImportError:
+        print("matplotlib not available, skipping visualization")
+        return
+    
+    fig, axes = plt.subplots(2, 1, figsize=(10, 8))
+    
+    # Plot 1: Silhouette score (the metric we're maximizing)
+    axes[0].plot(results_df['k'], results_df['silhouette_score'], 'b-o', markersize=4, linewidth=1.5)
+    axes[0].axvline(optimal_k, color='r', linestyle='--', linewidth=2, label=f'Optimal k={optimal_k}')
+    axes[0].set_xlabel('Number of Clusters (k)', fontsize=12)
+    axes[0].set_ylabel('Silhouette Score', fontsize=12)
+    axes[0].set_title('Silhouette Score vs Number of Clusters\n(Higher is better, range: -1 to 1)', fontsize=14)
+    axes[0].legend()
+    axes[0].grid(True, alpha=0.3)
+    
+    # Plot 2: Average within-cluster distance (cohesion - lower is better)
+    axes[1].plot(results_df['k'], results_df['avg_within_cluster_distance'], 'g-o', markersize=4, linewidth=1.5)
+    axes[1].axvline(optimal_k, color='r', linestyle='--', linewidth=2, label=f'Optimal k={optimal_k}')
+    axes[1].set_xlabel('Number of Clusters (k)', fontsize=12)
+    axes[1].set_ylabel('Avg Within-Cluster Distance', fontsize=12)
+    axes[1].set_title('Cohesion: Average Distance Within Clusters\n(Lower = tighter clusters)', fontsize=14)
+    axes[1].legend()
+    axes[1].grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    
+    if save_path:
+        plt.savefig(save_path, dpi=150, bbox_inches='tight')
+        print(f"Plot saved to {save_path}")
+    else:
+        plt.show()
+    
+    return fig
+
 if __name__ == "__main__":
+    # Example: Find optimal number of clusters
+    print("Loading character descriptions...")
     descs = load_character_descriptions()
+    
     if descs:
-        test_titles = list(descs.keys())[:50]
+        # Use a subset for testing (remove [:50] to use all data)
+        test_titles = list(descs.keys())[:100]  # Using 100 for faster testing
         test_texts = [descs[t] for t in test_titles]
+        
+        print(f"Generating embeddings for {len(test_texts)} characters...")
         embs = generate_embeddings(test_texts)
-        clusters = cluster_embeddings(embs, n_clusters=5)
-        keywords = extract_cluster_keywords(test_texts, clusters)
+        
+        # Find optimal number of clusters
+        results_df, optimal_k, optimal_clusters = find_optimal_semantic_clusters(embs, k_range=(2, 20))
+        
+        # Visualize results
+        print("\nCreating visualization...")
+        plot_cohesion_analysis(results_df, optimal_k, save_path='images/cohesion_analysis.png')
+        
+        # Extract keywords for the optimal clustering
+        print(f"\nExtracting keywords for optimal clustering (k={optimal_k})...")
+        keywords = extract_cluster_keywords(test_texts, optimal_clusters)
+        
+        print("\nTop keywords for each cluster:")
+        for cluster_id, keyword_str in sorted(keywords.items()):
+            cluster_size = sum(optimal_clusters == cluster_id)
+            print(f"  Cluster {cluster_id} ({cluster_size} characters): {keyword_str}")
