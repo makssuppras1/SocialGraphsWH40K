@@ -110,41 +110,13 @@ def load_character_descriptions(raw_data_path='raw_data', batch_pattern='lexican
     else:
         cache_file = Path(cache_file)
     
-    # If cache exists and we want to use it, load from cache
-    if cache_file.exists() and remove_names:
-        try:
-            print(f"  Loading cached processed descriptions from {cache_file.name}...", flush=True)
-            with open(cache_file, 'r', encoding='utf-8') as f:
-                cached_data = json.load(f)
-            # Filter by valid_nodes if provided
-            if valid_nodes is not None:
-                descriptions = {k: v for k, v in cached_data.items() if k in valid_nodes}
-            else:
-                descriptions = cached_data
-            print(f"  Loaded {len(descriptions)} cached descriptions", flush=True)
-            return descriptions
-        except Exception as e:
-            print(f"  Cache load failed ({e}), processing from scratch...", flush=True)
-    
-    # Process from scratch
-    descriptions = {}
-    path = Path(raw_data_path)
-    if not path.exists():
-        path = Path(__file__).parent.parent / raw_data_path
-    
-    files = list(path.glob(batch_pattern))
-    if not files:
-        return {}
-
-    # Load filtered network nodes if valid_nodes not provided but we want filtered
+    # Load filtered network nodes first (needed for cache check and processing)
     if valid_nodes is None:
         try:
-            # Try to import config, handling different import paths
             try:
                 from config import PICKLE_FILTERED_FILE
                 filter_path = Path(PICKLE_FILTERED_FILE)
             except ImportError:
-                # If config import fails, use relative path
                 filter_path = Path(__file__).parent.parent / "data" / "lexicanum_network_filtered.pkl"
             
             if not filter_path.exists():
@@ -155,13 +127,35 @@ def load_character_descriptions(raw_data_path='raw_data', batch_pattern='lexican
                     G_filtered = pickle.load(f)
                 valid_nodes = set(G_filtered.nodes())
             else:
-                # If filtered network doesn't exist, warn but proceed without filtering
-                print("Warning: Filtered network file not found. Loading all descriptions.")
                 valid_nodes = None
         except Exception as e:
-            # If we can't load filtered network, warn and proceed without filtering
-            print(f"Warning: Could not load filtered network ({e}). Loading all descriptions.")
             valid_nodes = None
+    
+    # If processed descriptions file exists, load from it
+    if cache_file.exists() and remove_names:
+        try:
+            print(f"  Loading processed descriptions from {cache_file.name}...", flush=True)
+            with open(cache_file, 'r', encoding='utf-8') as f:
+                cached_data = json.load(f)
+            # Filter by valid_nodes if provided
+            if valid_nodes is not None:
+                descriptions = {k: v for k, v in cached_data.items() if k in valid_nodes}
+            else:
+                descriptions = cached_data
+            print(f"  Loaded {len(descriptions)} processed descriptions from data file", flush=True)
+            return descriptions
+        except Exception as e:
+            print(f"  Failed to load processed descriptions ({e}), processing from scratch...", flush=True)
+    
+    # Process from scratch
+    descriptions = {}
+    path = Path(raw_data_path)
+    if not path.exists():
+        path = Path(__file__).parent.parent / raw_data_path
+    
+    files = list(path.glob(batch_pattern))
+    if not files:
+        return {}
 
     # Get all character names to remove (if requested)
     character_names_to_remove = None
@@ -194,16 +188,18 @@ def load_character_descriptions(raw_data_path='raw_data', batch_pattern='lexican
     
     print(f"  Processed {processed} characters total", flush=True)
     
-    # Save to cache if we processed with name removal
+    # Always save processed descriptions (without names) as a data file
     if remove_names and descriptions:
         try:
-            print(f"  Saving processed descriptions to cache ({cache_file.name})...", flush=True)
+            print(f"  Saving processed descriptions to {cache_file.name}...", flush=True)
             cache_file.parent.mkdir(parents=True, exist_ok=True)
+            # Save all descriptions (not filtered by valid_nodes) so cache is reusable
+            # But we need to save what we actually processed, so save all we have
             with open(cache_file, 'w', encoding='utf-8') as f:
                 json.dump(descriptions, f, indent=2, ensure_ascii=False)
-            print(f"  Cache saved successfully", flush=True)
+            print(f"  Saved {len(descriptions)} processed descriptions to data file", flush=True)
         except Exception as e:
-            print(f"  Warning: Could not save cache ({e})", flush=True)
+            print(f"  Warning: Could not save processed descriptions ({e})", flush=True)
     
     return descriptions
 
@@ -319,10 +315,25 @@ def find_optimal_semantic_clusters(embeddings, k_range=(2, 40), n_jobs=None):
     # Convert to DataFrame for easy analysis
     results_df = pd.DataFrame(results)
     
-    # Find the k with highest silhouette score (best balance of cohesion and separation)
-    optimal_k = results_df.loc[results_df['silhouette_score'].idxmax(), 'k']
+    # Find optimal k using parsimony principle: smallest k within threshold of max silhouette
+    # This balances quality (high silhouette) with parsimony (fewer clusters)
+    # Method: Find k where silhouette is within 95% of maximum, then choose smallest k
+    # This is similar to the elbow method but applied to silhouette scores
+    max_silhouette = results_df['silhouette_score'].max()
+    threshold = max_silhouette * 0.95  # Within 95% of maximum silhouette score
+    candidates = results_df[results_df['silhouette_score'] >= threshold]
     
-    print(f"\nOptimal number of clusters: k={optimal_k}")
+    if len(candidates) > 0:
+        # Choose the smallest k that meets the quality threshold (parsimony principle)
+        optimal_k = candidates.loc[candidates['k'].idxmin(), 'k']
+        print(f"\nOptimal number of clusters: k={optimal_k} (parsimony-adjusted)")
+        print(f"  Selection method: Smallest k where silhouette >= {threshold:.4f} (95% of max {max_silhouette:.4f})")
+    else:
+        # Fallback: if no k meets threshold, use max silhouette
+        optimal_k = results_df.loc[results_df['silhouette_score'].idxmax(), 'k']
+        print(f"\nOptimal number of clusters: k={optimal_k} (maximum silhouette)")
+        print(f"  Note: No k values met 95% threshold, using maximum silhouette score")
+    
     print(f"  Silhouette score: {results_df.loc[results_df['k']==optimal_k, 'silhouette_score'].values[0]:.4f}")
     print(f"  Average within-cluster distance: {results_df.loc[results_df['k']==optimal_k, 'avg_within_cluster_distance'].values[0]:.4f}")
     
