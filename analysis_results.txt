@@ -1,0 +1,295 @@
+================================================================================
+WARHAMMER 40K CHARACTER NETWORK ANALYSIS - COMPLETE RESULTS
+================================================================================
+
+================================================================================
+1. NETWORK STATISTICS
+================================================================================
+
+Nodes (characters): 3,668
+Edges (connections): 9,409
+Density: 0.001399
+Average degree: 5.13
+
+================================================================================
+2. DEGREE DISTRIBUTION
+================================================================================
+
+Mean degree: 5.13
+Median degree: 3
+Max degree: 161
+Min degree: 1
+
+Top 50 characters by degree (most connections):
+   1. Roboute Guilliman                        - 161 connections
+   2. Emperor of Mankind                       - 150 connections
+   3. Rogal Dorn                               - 127 connections
+   4. Ibram Gaunt                              - 126 connections
+   5. Angron                                   - 121 connections
+   6. Sanguinius                               - 113 connections
+   7. Lion El'Jonson                           - 108 connections
+   8. Fulgrim                                  - 91 connections
+   9. Ezekyle Abaddon                          - 86 connections
+  10. Vulkan                                   - 84 connections
+  11. Fabius Bile                              - 80 connections
+  12. Mortarion                                - 77 connections
+  13. Leman Russ (Primarch)                    - 76 connections
+  14. Malcador the Sigillite                   - 74 connections
+  15. Baal (Chaos Sorcerer)                    - 73 connections
+  16. Magnus (Inquisitor)                      - 69 connections
+  17. Perturabo                                - 66 connections
+  18. Jaghatai Khan                            - 64 connections
+  19. Konrad Curze                             - 59 connections
+  20. Garviel Loken                            - 58 connections
+  21. Ahzek Ahriman                            - 58 connections
+  22. Erebus                                   - 56 connections
+  23. Dante                                    - 54 connections
+  24. Horus Lupercal                           - 54 connections
+  25. Sigismund                                - 53 connections
+  26. Colm Corbec                              - 53 connections
+  27. Saint Sabbat                             - 52 connections
+  28. Nathaniel Garro                          - 52 connections
+  29. Loyalists of the Traitor Legions         - 51 connections
+  30. Typhus                                   - 51 connections
+  31. Logan Grimnar                            - 50 connections
+  32. Uriel Ventris                            - 50 connections
+  33. Ferrus Manus                             - 49 connections
+  34. Belisarius Cawl                          - 48 connections
+  35. Gregor Eisenhorn                         - 47 connections
+  36. Constantin Valdor                        - 44 connections
+  37. Cypher                                   - 43 connections
+  38. Luther                                   - 42 connections
+  39. Elim Rawne                               - 42 connections
+  40. Azrael                                   - 41 connections
+  41. Macaroth                                 - 40 connections
+  42. Demetrian Titus                          - 40 connections
+  43. Cato Sicarius                            - 40 connections
+  44. Koorland                                 - 40 connections
+  45. Ciaphas Cain                             - 39 connections
+  46. Ragnar Blackmane                         - 38 connections
+  47. Honsou                                   - 38 connections
+  48. Euphrati Keeler                          - 38 connections
+  49. Living Saint                             - 37 connections
+  50. Raldoron                                 - 36 connections
+
+================================================================================
+3. CENTRALITY ANALYSIS
+================================================================================
+
+Top 10 characters by betweenness centrality (bridge characters):
+   1. Emperor of Mankind                       - 0.301267
+   2. Roboute Guilliman                        - 0.216343
+   3. Rogal Dorn                               - 0.083584
+   4. Saint Sabbat                             - 0.076297
+   5. Angron                                   - 0.072689
+   6. Lion El'Jonson                           - 0.065926
+   7. Vulkan                                   - 0.062737
+   8. Ezekyle Abaddon                          - 0.055541
+   9. Leman Russ (Primarch)                    - 0.055397
+  10. Ibram Gaunt                              - 0.053721
+
+Top 10 characters by eigenvector centrality (connected to important characters):
+   1. Emperor of Mankind                       - 0.248804
+   2. Roboute Guilliman                        - 0.242769
+   3. Rogal Dorn                               - 0.232547
+   4. Sanguinius                               - 0.204107
+   5. Horus Lupercal                           - 0.178649
+   6. Angron                                   - 0.175886
+   7. Lion El'Jonson                           - 0.174943
+   8. Malcador the Sigillite                   - 0.172005
+   9. Mortarion                                - 0.156242
+  10. Ezekyle Abaddon                          - 0.155235
+
+================================================================================
+4. ASSORTATIVITY
+================================================================================
+
+Degree assortativity coefficient: -0.0195
+Network is disassortative: high-degree characters connect to low-degree characters
+
+================================================================================
+5. COMMUNITY DETECTION
+================================================================================
+
+Number of communities found: 42
+Modularity score: 0.7879
+
+Top 25 largest communities:
+   1. 362 characters
+   2. 294 characters
+   3. 230 characters
+   4. 210 characters
+   5. 210 characters
+   6. 207 characters
+   7. 180 characters
+   8. 176 characters
+   9. 169 characters
+  10. 143 characters
+  11. 125 characters
+  12. 120 characters
+  13. 108 characters
+  14. 98 characters
+  15. 96 characters
+  16. 95 characters
+  17. 79 characters
+  18. 76 characters
+  19. 75 characters
+  20. 70 characters
+  21. 68 characters
+  22. 54 characters
+  23. 47 characters
+  24. 45 characters
+  25. 43 characters
+
+================================================================================
+6. SEMANTIC CLUSTERING
+================================================================================
+
+Optimal number of clusters: 30
+Total characters clustered: 3667
+Silhouette score: 0.0412
+
+All semantic clusters (by size):
+   1. Cluster 18: 242 characters
+      Keywords: warband, legion, scythes, tearers, sorcerer
+   2. Cluster 15: 217 characters
+      Keywords: angels, legion, caliban, chaplain, sergeant
+   3. Cluster 7: 196 characters
+      Keywords: ordo, retinue, xenos, malleus, inquisition
+   4. Cluster 24: 196 characters
+      Keywords: legion, regiment, general, colonel, worlds
+   5. Cluster 13: 192 characters
+      Keywords: ultramarines, calth, bearers, macragge, sergeant
+   6. Cluster 12: 187 characters
+      Keywords: cadian, regiment, general, legion, cadia
+   7. Cluster 8: 184 characters
+      Keywords: legion, primarch, terra, m30, angels
+   8. Cluster 9: 162 characters
+      Keywords: legion, eaters, warband, khorne, dreadnought
+   9. Cluster 6: 151 characters
+      Keywords: wolves, fenris, pack, priest, prospero
+  10. Cluster 22: 139 characters
+      Keywords: terra, lords, ecclesiarchy, admiral, indomitus
+  11. Cluster 16: 135 characters
+      Keywords: primarch, legion, angels, terra, caliban
+  12. Cluster 21: 133 characters
+      Keywords: eldar, craftworld, iyanden, ynnari, commorragh
+  13. Cluster 26: 133 characters
+      Keywords: tzeentch, nurgle, khorne, slaanesh, angels
+  14. Cluster 11: 132 characters
+      Keywords: farsight, house, trader, rogue, knights
+  15. Cluster 5: 128 characters
+      Keywords: tanith, regiment, trooper, colonel, commissar
+  16. Cluster 10: 116 characters
+      Keywords: fists, legion, terra, fist, phalanx
+  17. Cluster 3: 112 characters
+      Keywords: mechanicum, mars, mechanicus, fabricator, tech
+  18. Cluster 14: 105 characters
+      Keywords: necromunda, dynasty, house, necron, bounty
+  19. Cluster 20: 97 characters
+      Keywords: deathwatch, team, watch, sergeant, xenos
+  20. Cluster 25: 97 characters
+      Keywords: templars, marshal, armageddon, orks, dreadnought
+  21. Cluster 1: 94 characters
+      Keywords: sisters, sororitas, canoness, sister, adepta
+  22. Cluster 19: 78 characters
+      Keywords: custodes, terra, companions, shield, vengeful
+  23. Cluster 28: 74 characters
+      Keywords: scars, white, legion, brotherhood, garmon
+  24. Cluster 0: 72 characters
+      Keywords: legion, council, massacre, 220px, isstvan
+  25. Cluster 2: 64 characters
+      Keywords: salamanders, legion, primarch, chaplain, massacre
+  26. Cluster 27: 61 characters
+      Keywords: knights, grey, brotherhood, armageddon, primarch
+  27. Cluster 4: 56 characters
+      Keywords: vervunhive, tanith, regiment, commissar, colonel
+  28. Cluster 23: 46 characters
+      Keywords: thousand, wolves, legion, prospero, sorcerer
+  29. Cluster 17: 42 characters
+      Keywords: ravens, eldar, seed, tau, legion
+  30. Cluster 29: 26 characters
+      Keywords: drinkers, soul, fort, star, archmagos
+
+================================================================================
+7. MYTHOLOGY VS NARRATIVE ANALYSIS
+================================================================================
+
+Characters analyzed: 3667
+Semantic clusters: 30
+Network communities: 50
+
+Betweenness Centrality:
+  Mean: 0.000475
+  Max: 0.085229
+  Min: 0.000000
+
+Neighbor Semantic Consistency:
+  Mean: 0.5800
+  Min: 0.0924
+  Max: 1.0000
+
+Mythological anchors (high betweenness, low semantic consistency):
+  Found 68 candidates
+  Thresholds: betweenness >= 0.000683, consistency <= 0.4752
+
+Top 20 mythological anchor candidates:
+   1. Samus                                   
+      Betweenness: 0.030961, Consistency: 0.4625
+   2. Constantin Valdor                       
+      Betweenness: 0.017604, Consistency: 0.4560
+   3. Fabius Bile                             
+      Betweenness: 0.015737, Consistency: 0.4477
+   4. Asdrubael Vect                          
+      Betweenness: 0.014627, Consistency: 0.4654
+   5. Belisarius Cawl                         
+      Betweenness: 0.013452, Consistency: 0.4743
+   6. Saint Sabbat                            
+      Betweenness: 0.012788, Consistency: 0.4053
+   7. Kairos Fateweaver                       
+      Betweenness: 0.012601, Consistency: 0.4289
+   8. Living Saint                            
+      Betweenness: 0.011617, Consistency: 0.4627
+   9. Kor'sarro Khan                          
+      Betweenness: 0.010658, Consistency: 0.4075
+  10. Hyperion                                
+      Betweenness: 0.009848, Consistency: 0.3511
+  11. Euphrati Keeler                         
+      Betweenness: 0.008999, Consistency: 0.4622
+  12. Saint Celestine                         
+      Betweenness: 0.007688, Consistency: 0.4697
+  13. Eliphas                                 
+      Betweenness: 0.006765, Consistency: 0.4353
+  14. Lilith Abfequarn                        
+      Betweenness: 0.006217, Consistency: 0.4265
+  15. Merek Grimaldus                         
+      Betweenness: 0.006060, Consistency: 0.4679
+  16. M'kar                                   
+      Betweenness: 0.004616, Consistency: 0.4681
+  17. Skarbrand                               
+      Betweenness: 0.004590, Consistency: 0.4277
+  18. The Masque                              
+      Betweenness: 0.004329, Consistency: 0.4458
+  19. Alizebeth Bequin                        
+      Betweenness: 0.004266, Consistency: 0.4476
+  20. Gerome Thrax                            
+      Betweenness: 0.004034, Consistency: 0.4751
+
+================================================================================
+8. FACTION DISTRIBUTION
+================================================================================
+
+Characters by faction:
+   1. Space Marines                  - 1334 characters
+   2. Chaos                          -  868 characters
+   3. Imperium                       -  531 characters
+   4. Astra Militarum                -  348 characters
+   5. Inquisition                    -  176 characters
+   6. Mechanicum                     -   97 characters
+   7. Asuryani                       -   73 characters
+   8. Adeptus Custodes               -   60 characters
+   9. Adepta Sororitas               -   55 characters
+  10. Necrons                        -   49 characters
+  11. Drukhari                       -   45 characters
+  12. T'au                           -   29 characters
+  13. Leagues of Votann              -    2 characters

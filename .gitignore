@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+sogra/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data files (large files - consider using Git LFS)
+# Uncomment if you don't want to track large data files
+# raw_data/*.json
+# data/*.gexf
+# data/*.pkl
+# data/*.graphml
+
+# Temporary files
+*.tmp
+*.log
+
+# Cursor rules (personal preferences)
+.cursorrules
+

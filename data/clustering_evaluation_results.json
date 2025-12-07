@@ -1,0 +1,243 @@
+{
+  "k_range": {
+    "min": 2,
+    "max": 40
+  },
+  "optimal_k": 30,
+  "evaluations": [
+    {
+      "k": 2,
+      "silhouette_score": 0.03218725323677063,
+      "avg_within_cluster_distance": 1.1075817346572876,
+      "is_optimal": false
+    },
+    {
+      "k": 3,
+      "silhouette_score": 0.019646674394607544,
+      "avg_within_cluster_distance": 1.1012166738510132,
+      "is_optimal": false
+    },
+    {
+      "k": 4,
+      "silhouette_score": 0.019988389685750008,
+      "avg_within_cluster_distance": 1.0972751379013062,
+      "is_optimal": false
+    },
+    {
+      "k": 5,
+      "silhouette_score": 0.02295137196779251,
+      "avg_within_cluster_distance": 1.0921190977096558,
+      "is_optimal": false
+    },
+    {
+      "k": 6,
+      "silhouette_score": 0.023536520078778267,
+      "avg_within_cluster_distance": 1.0859135389328003,
+      "is_optimal": false
+    },
+    {
+      "k": 7,
+      "silhouette_score": 0.025162968784570694,
+      "avg_within_cluster_distance": 1.0856654644012451,
+      "is_optimal": false
+    },
+    {
+      "k": 8,
+      "silhouette_score": 0.025765974074602127,
+      "avg_within_cluster_distance": 1.0777301788330078,
+      "is_optimal": false
+    },
+    {
+      "k": 9,
+      "silhouette_score": 0.028184102848172188,
+      "avg_within_cluster_distance": 1.0735453367233276,
+      "is_optimal": false
+    },
+    {
+      "k": 10,
+      "silhouette_score": 0.029186997562646866,
+      "avg_within_cluster_distance": 1.0695512294769287,
+      "is_optimal": false
+    },
+    {
+      "k": 11,
+      "silhouette_score": 0.028218841180205345,
+      "avg_within_cluster_distance": 1.069566249847412,
+      "is_optimal": false
+    },
+    {
+      "k": 12,
+      "silhouette_score": 0.029461123049259186,
+      "avg_within_cluster_distance": 1.0639909505844116,
+      "is_optimal": false
+    },
+    {
+      "k": 13,
+      "silhouette_score": 0.031499557197093964,
+      "avg_within_cluster_distance": 1.0590105056762695,
+      "is_optimal": false
+    },
+    {
+      "k": 14,
+      "silhouette_score": 0.03146412596106529,
+      "avg_within_cluster_distance": 1.0584900379180908,
+      "is_optimal": false
+    },
+    {
+      "k": 15,
+      "silhouette_score": 0.03213951736688614,
+      "avg_within_cluster_distance": 1.0522767305374146,
+      "is_optimal": false
+    },
+    {
+      "k": 16,
+      "silhouette_score": 0.0330989770591259,
+      "avg_within_cluster_distance": 1.050044059753418,
+      "is_optimal": false
+    },
+    {
+      "k": 17,
+      "silhouette_score": 0.03286582604050636,
+      "avg_within_cluster_distance": 1.0470936298370361,
+      "is_optimal": false
+    },
+    {
+      "k": 18,
+      "silhouette_score": 0.034448545426130295,
+      "avg_within_cluster_distance": 1.041467547416687,
+      "is_optimal": false
+    },
+    {
+      "k": 19,
+      "silhouette_score": 0.03350624442100525,
+      "avg_within_cluster_distance": 1.0394227504730225,
+      "is_optimal": false
+    },
+    {
+      "k": 20,
+      "silhouette_score": 0.033976003527641296,
+      "avg_within_cluster_distance": 1.0337891578674316,
+      "is_optimal": false
+    },
+    {
+      "k": 21,
+      "silhouette_score": 0.03473742678761482,
+      "avg_within_cluster_distance": 1.0346766710281372,
+      "is_optimal": false
+    },
+    {
+      "k": 22,
+      "silhouette_score": 0.03564119338989258,
+      "avg_within_cluster_distance": 1.032279133796692,
+      "is_optimal": false
+    },
+    {
+      "k": 23,
+      "silhouette_score": 0.03685100004076958,
+      "avg_within_cluster_distance": 1.026462197303772,
+      "is_optimal": false
+    },
+    {
+      "k": 24,
+      "silhouette_score": 0.03664146736264229,
+      "avg_within_cluster_distance": 1.0279531478881836,
+      "is_optimal": false
+    },
+    {
+      "k": 25,
+      "silhouette_score": 0.03417085483670235,
+      "avg_within_cluster_distance": 1.0279635190963745,
+      "is_optimal": false
+    },
+    {
+      "k": 26,
+      "silhouette_score": 0.03690790757536888,
+      "avg_within_cluster_distance": 1.0240042209625244,
+      "is_optimal": false
+    },
+    {
+      "k": 27,
+      "silhouette_score": 0.035785011947155,
+      "avg_within_cluster_distance": 1.0228328704833984,
+      "is_optimal": false
+    },
+    {
+      "k": 28,
+      "silhouette_score": 0.037825170904397964,
+      "avg_within_cluster_distance": 1.0198917388916016,
+      "is_optimal": false
+    },
+    {
+      "k": 29,
+      "silhouette_score": 0.03760292008519173,
+      "avg_within_cluster_distance": 1.0180292129516602,
+      "is_optimal": false
+    },
+    {
+      "k": 30,
+      "silhouette_score": 0.04121668264269829,
+      "avg_within_cluster_distance": 1.0175611972808838,
+      "is_optimal": true
+    },
+    {
+      "k": 31,
+      "silhouette_score": 0.0393589623272419,
+      "avg_within_cluster_distance": 1.0161564350128174,
+      "is_optimal": false
+    },
+    {
+      "k": 32,
+      "silhouette_score": 0.035473112016916275,
+      "avg_within_cluster_distance": 1.0162683725357056,
+      "is_optimal": false
+    },
+    {
+      "k": 33,
+      "silhouette_score": 0.035102710127830505,
+      "avg_within_cluster_distance": 1.0169663429260254,
+      "is_optimal": false
+    },
+    {
+      "k": 34,
+      "silhouette_score": 0.03685278818011284,
+      "avg_within_cluster_distance": 1.012448787689209,
+      "is_optimal": false
+    },
+    {
+      "k": 35,
+      "silhouette_score": 0.03901735320687294,
+      "avg_within_cluster_distance": 1.0118342638015747,
+      "is_optimal": false
+    },
+    {
+      "k": 36,
+      "silhouette_score": 0.035698018968105316,
+      "avg_within_cluster_distance": 1.0122730731964111,
+      "is_optimal": false
+    },
+    {
+      "k": 37,
+      "silhouette_score": 0.03724577650427818,
+      "avg_within_cluster_distance": 1.0086146593093872,
+      "is_optimal": false
+    },
+    {
+      "k": 38,
+      "silhouette_score": 0.038508351892232895,
+      "avg_within_cluster_distance": 1.007379412651062,
+      "is_optimal": false
+    },
+    {
+      "k": 39,
+      "silhouette_score": 0.038227736949920654,
+      "avg_within_cluster_distance": 1.0063527822494507,
+      "is_optimal": false
+    },
+    {
+      "k": 40,
+      "silhouette_score": 0.03896113485097885,
+      "avg_within_cluster_distance": 1.0030041933059692,
+      "is_optimal": false
+    }
+  ]
+}

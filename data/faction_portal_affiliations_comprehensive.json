@@ -1,0 +1,635 @@
+{
+  "Adepta Sororitas": [
+    "Adepta Sororitas"
+  ],
+  "AdeptaSororitas": [
+    "Adepta Sororitas"
+  ],
+  "Adeptus Astartes Homeworld": [
+    "Space Marines"
+  ],
+  "Adeptus Custodes": [
+    "Adeptus Custodes"
+  ],
+  "AdeptusCustodes": [
+    "Adeptus Custodes"
+  ],
+  "AdeptusMechanicus": [
+    "Mechanicum"
+  ],
+  "Adeptus Arbites": [
+    "Imperium"
+  ],
+  "AdeptusArbites": [
+    "Imperium"
+  ],
+  "AlphaLegion": [
+    "Chaos"
+  ],
+  "Aspect Warrior": [
+    "Asuryani"
+  ],
+  "Assassinorum": [
+    "Imperium"
+  ],
+  "Astra Militarum": [
+    "Astra Militarum"
+  ],
+  "AstraMilitarum": [
+    "Astra Militarum"
+  ],
+  "Asuryani": [
+    "Asuryani"
+  ],
+  "Autarch": [
+    "Asuryani"
+  ],
+  "BlackLegion": [
+    "Chaos"
+  ],
+  "BlackTemplar": [
+    "Space Marines"
+  ],
+  "BlackTemplars": [
+    "Space Marines"
+  ],
+  "BloodAngel": [
+    "Space Marines"
+  ],
+  "BloodAngels": [
+    "Space Marines"
+  ],
+  "BloodAxes": [
+    "Orks"
+  ],
+  "BloodRavens": [
+    "Space Marines"
+  ],
+  "CSM": [
+    "Chaos"
+  ],
+  "Chaos": [
+    "Chaos"
+  ],
+  "Chaos Human": [
+    "Chaos"
+  ],
+  "ChaosHuman": [
+    "Chaos"
+  ],
+  "ChaosKnight": [
+    "Chaos"
+  ],
+  "ChaosKnights": [
+    "Chaos"
+  ],
+  "ChaosTitans": [
+    "Chaos"
+  ],
+  "Chapters": [
+    "Space Marines"
+  ],
+  "Codex Astartes": [
+    "Space Marines"
+  ],
+  "CollegiaTitanica": [
+    "Mechanicum"
+  ],
+  "CrimsonFists": [
+    "Space Marines"
+  ],
+  "CrimsonSlaughter": [
+    "Chaos"
+  ],
+  "Daemon": [
+    "Chaos"
+  ],
+  "Cadian Shock Troopers": [
+    "Astra Militarum"
+  ],
+  "CadianShockTroopers": [
+    "Astra Militarum"
+  ],
+  "Carcharodons": [
+    "Space Marines"
+  ],
+  "Carcharodon": [
+    "Space Marines"
+  ],
+  "Chapter Serfs": [
+    "Space Marines"
+  ],
+  "ChapterSerfs": [
+    "Space Marines"
+  ],
+  "Chaos Space Marine Psykers": [
+    "Chaos"
+  ],
+  "ChaosSpaceMarinePsykers": [
+    "Chaos"
+  ],
+  "Cult Mechanicus#Religion": [
+    "Mechanicum"
+  ],
+  "Craftworld Eldar": [
+    "Asuryani"
+  ],
+  "CraftworldEldar": [
+    "Asuryani"
+  ],
+  "Dark Eldar": [
+    "Drukhari"
+  ],
+  "Dark Eldar Quotes": [
+    "Drukhari"
+  ],
+  "Dark Reaper": [
+    "Asuryani"
+  ],
+  "DarkAngel": [
+    "Space Marines"
+  ],
+  "DarkAngels": [
+    "Space Marines"
+  ],
+  "DarkEldar": [
+    "Drukhari"
+  ],
+  "DarkMechanicum": [
+    "Chaos"
+  ],
+  "DeathGuard": [
+    "Chaos"
+  ],
+  "Deathwatch": [
+    "Space Marines"
+  ],
+  "Dire Avenger": [
+    "Asuryani"
+  ],
+  "Drukhari": [
+    "Drukhari"
+  ],
+  "Ecclesiarchy": [
+    "Imperium"
+  ],
+  "Eldar": [
+    "Asuryani"
+  ],
+  "Eldar Armoury": [
+    "Asuryani"
+  ],
+  "Eldar Corsair": [
+    "Drukhari"
+  ],
+  "Eldar Corsairs": [
+    "Drukhari"
+  ],
+  "EldarCorsairs": [
+    "Drukhari"
+  ],
+  "Eldar Fleet": [
+    "Asuryani"
+  ],
+  "Eldar Fleet Equipment": [
+    "Asuryani"
+  ],
+  "Eldar Vehicles": [
+    "Asuryani"
+  ],
+  "Eldar Wargear": [
+    "Asuryani"
+  ],
+  "Eldar Weaponry": [
+    "Asuryani"
+  ],
+  "EmperorsChild": [
+    "Chaos"
+  ],
+  "EmperorsChildren": [
+    "Chaos"
+  ],
+  "Exodites": [
+    "Drukhari"
+  ],
+  "Eye of Terror": [
+    "Chaos"
+  ],
+  "Fallen Angels": [
+    "Space Marines"
+  ],
+  "FallenAngel": [
+    "Space Marines"
+  ],
+  "FallenAngels": [
+    "Space Marines"
+  ],
+  "Farseer": [
+    "Asuryani"
+  ],
+  "Fire Dragon": [
+    "Asuryani"
+  ],
+  "FleshTearer": [
+    "Space Marines"
+  ],
+  "FleshTearers": [
+    "Space Marines"
+  ],
+  "Fortress-monastery": [
+    "Space Marines"
+  ],
+  "GSC": [
+    "Genestealer Cults"
+  ],
+  "Genestealer Cults": [
+    "Genestealer Cults"
+  ],
+  "GenestealerCults": [
+    "Genestealer Cults"
+  ],
+  "Gods of Chaos": [
+    "Chaos"
+  ],
+  "Grav-tank#Eldar": [
+    "Asuryani"
+  ],
+  "GreyKnight": [
+    "Space Marines"
+  ],
+  "GreyKnights": [
+    "Space Marines"
+  ],
+  "Guardian": [
+    "Asuryani"
+  ],
+  "Haemonculi#Haemonculi Covens": [
+    "Drukhari"
+  ],
+  "Harlequins": [
+    "Asuryani"
+  ],
+  "Horus Heresy": [
+    "Chaos"
+  ],
+  "Howling Banshee": [
+    "Asuryani"
+  ],
+  "HowlingGriffons": [
+    "Space Marines"
+  ],
+  "High Lords of Terra": [
+    "Imperium"
+  ],
+  "HighLordsOfTerra": [
+    "Imperium"
+  ],
+  "HighLords": [
+    "Imperium"
+  ],
+  "Imperial Guard": [
+    "Space Marines"
+  ],
+  "Imperial": [
+    "Imperium"
+  ],
+  "Imperial Space Marines": [
+    "Space Marines"
+  ],
+  "ImperialSpaceMarines": [
+    "Space Marines"
+  ],
+  "ImperialArmy": [
+    "Astra Militarum"
+  ],
+  "Imperial Guard Commissars": [
+    "Astra Militarum"
+  ],
+  "ImperialGuardCommissars": [
+    "Astra Militarum"
+  ],
+  "ImperialFists": [
+    "Space Marines"
+  ],
+  "ImperialGuard": [
+    "Space Marines"
+  ],
+  "ImperialKnight": [
+    "Imperium"
+  ],
+  "ImperialKnights": [
+    "Imperium"
+  ],
+  "ImperialNavy": [
+    "Imperium"
+  ],
+  "Imperium": [
+    "Imperium"
+  ],
+  "Incubus": [
+    "Drukhari"
+  ],
+  "Inquisition": [
+    "Inquisition"
+  ],
+  "Inquisitor": [
+    "Inquisition"
+  ],
+  "Knights": [
+    "Imperium"
+  ],
+  "Knight": [
+    "Imperium"
+  ],
+  "Kroot": [
+    "T'au"
+  ],
+  "IronHand": [
+    "Space Marines"
+  ],
+  "IronHands": [
+    "Space Marines"
+  ],
+  "IronWarrior": [
+    "Chaos"
+  ],
+  "IronWarriors": [
+    "Chaos"
+  ],
+  "Kabal": [
+    "Drukhari"
+  ],
+  "Khorne": [
+    "Chaos"
+  ],
+  "LOV": [
+    "Leagues of Votann"
+  ],
+  "Leagues of Votann": [
+    "Leagues of Votann"
+  ],
+  "LeaguesOfVotann": [
+    "Leagues of Votann"
+  ],
+  "List of Chaos Space Marine Warbands": [
+    "Chaos"
+  ],
+  "List of Haemonculi Covens": [
+    "Drukhari"
+  ],
+  "List of Kabals": [
+    "Drukhari"
+  ],
+  "List of Wych Cults": [
+    "Drukhari"
+  ],
+  "Loyal Space Marine Chapters (List)": [
+    "Space Marines"
+  ],
+  "LunaWolves": [
+    "Chaos"
+  ],
+  "Mandrakes": [
+    "Drukhari"
+  ],
+  "Mordian Iron Guard": [
+    "Astra Militarum"
+  ],
+  "MordianIronGuard": [
+    "Astra Militarum"
+  ],
+  "Mordian": [
+    "Astra Militarum"
+  ],
+  "Mechanicum": [
+    "Mechanicum"
+  ],
+  "Novamarines": [
+    "Space Marines"
+  ],
+  "Novamarine": [
+    "Space Marines"
+  ],
+  "Necromunda": [
+    "Imperium"
+  ],
+  "Necron": [
+    "Necrons"
+  ],
+  "Necrons": [
+    "Necrons"
+  ],
+  "NightLords": [
+    "Chaos"
+  ],
+  "Nurgle": [
+    "Chaos"
+  ],
+  "OrdoHereticus": [
+    "Inquisition"
+  ],
+  "OrdoMalleus": [
+    "Inquisition"
+  ],
+  "OrdoXenos": [
+    "Inquisition"
+  ],
+  "Orks": [
+    "Orks"
+  ],
+  "Officio Assassinorum": [
+    "Imperium"
+  ],
+  "OfficioAssassinorum": [
+    "Imperium"
+  ],
+  "Planetary Defence Forces": [
+    "Imperium"
+  ],
+  "PlanetaryDefenceForces": [
+    "Imperium"
+  ],
+  "PDF": [
+    "Imperium"
+  ],
+  "Purging of Centrati's Eye": [
+    "Drukhari"
+  ],
+  "RavenGuard": [
+    "Space Marines"
+  ],
+  "RedCorsairs": [
+    "Chaos"
+  ],
+  "Renegades": [
+    "Chaos"
+  ],
+  "Renegade": [
+    "Chaos"
+  ],
+  "Salamanders": [
+    "Space Marines"
+  ],
+  "Silver Templars": [
+    "Space Marines"
+  ],
+  "SilverTemplars": [
+    "Space Marines"
+  ],
+  "Armageddon Steel Legion": [
+    "Astra Militarum"
+  ],
+  "ArmageddonSteelLegion": [
+    "Astra Militarum"
+  ],
+  "Adeptus Ministorum": [
+    "Imperium"
+  ],
+  "AdeptusMinistorum": [
+    "Imperium"
+  ],
+  "ScythesOfTheEmperor": [
+    "Space Marines"
+  ],
+  "Seer": [
+    "Asuryani"
+  ],
+  "Shadow Spectre": [
+    "Asuryani"
+  ],
+  "Shining Spear": [
+    "Asuryani"
+  ],
+  "Slaanesh": [
+    "Chaos"
+  ],
+  "Sisters of Silence": [
+    "Imperium"
+  ],
+  "SistersOfSilence": [
+    "Imperium"
+  ],
+  "SonsOfHorus": [
+    "Chaos"
+  ],
+  "SoulDrinkers": [
+    "Space Marines"
+  ],
+  "Space Marine Legion": [
+    "Space Marines"
+  ],
+  "Space Marine Legions": [
+    "Chaos"
+  ],
+  "Space Marines": [
+    "Space Marines"
+  ],
+  "SpaceMarine": [
+    "Space Marines"
+  ],
+  "SpaceMarines": [
+    "Space Marines"
+  ],
+  "Space Marine Psykers": [
+    "Space Marines"
+  ],
+  "SpaceMarinePsykers": [
+    "Space Marines"
+  ],
+  "SpaceWolves": [
+    "Space Marines"
+  ],
+  "Spiritseer": [
+    "Asuryani"
+  ],
+  "Squat": [
+    "Leagues of Votann"
+  ],
+  "Striking Scorpion": [
+    "Asuryani"
+  ],
+  "Swooping Hawk": [
+    "Asuryani"
+  ],
+  "T'au": [
+    "T'au"
+  ],
+  "T'au Empire": [
+    "T'au"
+  ],
+  "TauEmpire": [
+    "T'au"
+  ],
+  "Tanith": [
+    "Astra Militarum"
+  ],
+  "Tau": [
+    "T'au"
+  ],
+  "The Fall of Medusa V": [
+    "Drukhari"
+  ],
+  "The Harvest of Chogros": [
+    "Drukhari"
+  ],
+  "ThousandSon": [
+    "Chaos"
+  ],
+  "ThousandSons": [
+    "Chaos"
+  ],
+  "Traitor Legions": [
+    "Chaos"
+  ],
+  "Tyranids": [
+    "Tyranids"
+  ],
+  "Tzeentch": [
+    "Chaos"
+  ],
+  "Tyrannic Wars": [
+    "Imperium"
+  ],
+  "TyrannicWars": [
+    "Imperium"
+  ],
+  "Ultramarines": [
+    "Space Marines"
+  ],
+  "War of Dark Revelations": [
+    "Drukhari"
+  ],
+  "Warlock": [
+    "Asuryani"
+  ],
+  "Warp Spider": [
+    "Asuryani"
+  ],
+  "WhiteScars": [
+    "Space Marines"
+  ],
+  "WordBearers": [
+    "Chaos"
+  ],
+  "WorldEaters": [
+    "Chaos"
+  ],
+  "Wraith Construct": [
+    "Asuryani"
+  ],
+  "Wraithguard": [
+    "Asuryani"
+  ],
+  "Wraithknight": [
+    "Asuryani"
+  ],
+  "Wraithlord": [
+    "Asuryani"
+  ],
+  "Wych Cult": [
+    "Drukhari"
+  ],
+  "Ynnari": [
+    "Drukhari"
+  ]
+}
